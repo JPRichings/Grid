@@ -154,7 +154,6 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envCacheLat(LatticeComplex, SeqmomphName_);
     envTmpLat(LatticeComplex, "coor");
     envTmpLat(LatticeComplex, "latt_compl");
-    // envTempLat(FermionField, par().V); not required as vectors generatedin this module
     envTempLat(PropagatorField, "q");
 
     // for A2A
@@ -163,11 +162,14 @@ void TMesonFieldConserved<FImpl>::setup(void)
     int N = par().N;
     envTmp(std::vector<FermionField>, "w1", 1, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1", 1, N, FermionField(env().getGrid(1)));
-    envTmp(FermionField, "w2", 1, N, FermionField(env().getGrid(1)));
-    envTmp(FermionField, "v2", 1, N, FermionField(env().getGrid(1)));
+    envTmp(std::vector<FermionField>, "v1_con", 1, N, FermionField(env().getGrid(1)));
+    //envTmp(FermionField, "w2", 1, N, FermionField(env().getGrid(1)));
+    //envTmp(FermionField, "v2", 1, N, FermionField(env().getGrid(1)));
 
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
+    envTmp(std::vector<ComplexD>, "MF_z1", 1, nt);
+    envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
     envTmp(std::vector<ComplexD>, "tmp", 1, nt);
 }
 // execution ///////////////////////////////////////////////////////////////////
@@ -205,23 +207,24 @@ void TMesonFieldConserved<FImpl>::execute(void)
     // get temporary volumes
     envGetTmp(std::vector<ComplexD>, MF_x);
     envGetTmp(std::vector<ComplexD>, MF_y);
+    envGetTmp(std::vector<ComplexD>, MF_x);
+    envGetTmp(std::vector<ComplexD>, MF_y);
     envGetTmp(std::vector<ComplexD>, tmp);
 
     for (unsigned int t = 0; t < nt; ++t)
     {
-        tmp[t] = TensorRemove(MF_x[t] * MF_y[t] * 0.0);
+        tmp[t] = TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t] * 0.0);
     }
 
     Gamma gSnk(gammaList[0].first);
     Gamma gSrc(gammaList[0].second);
 
     auto &a2a1_fn = envGetDerived(A2ABase, A2AReturn, par().A2A1 + "_ret");
-    auto &a2a2_fn = envGetDerived(A2ABase, A2AReturn, par().A2A2 + "_ret");
+    //auto &a2a2_fn = envGetDerived(A2ABase, A2AReturn, par().A2A2 + "_ret");
 
     envGetTmp(std::vector<FermionField>, w1);
     envGetTmp(std::vector<FermionField>, v1);
-    //envGetTmp(FermionField, w2);
-    //envGetTmp(FermionField, v2);
+    envGetTmp(std::vector<FermionField>, v1_con);
 
     // Get v and w vectors
     LOG(Message) << "Finding v and w vectors for N =  " << N << std::endl;
@@ -230,8 +233,6 @@ void TMesonFieldConserved<FImpl>::execute(void)
         a2a1_fn(i, v1[i], w1[i]);
     }
     LOG(Message) << "Found v and w vectors for N =  " << N << std::endl;
-
-
 
 
     // sequential converved //
@@ -255,14 +256,14 @@ void TMesonFieldConserved<FImpl>::execute(void)
     }
 
     auto &src = envGet(FermionField, getName());
-    envGetTmp(FermionField, src_tmp);
-    src_tmp = src;
+    envGetTmp(PropagaorField, src_tmp);
+    src_tmp_ferm = src; // why is this here?
     // auto &V   = envGet(FermionField, par().V); no longer required as vectors generatedin this module
-    auto &q = envGet(PropagatorField, par().q);
+    auto &q = envGet(PropagatorField, q);
     auto &mat = envGet(FMat, par().action);
     envGetTmp(LatticeComplex, latt_compl);
 
-    src = zero;
+    // src = zero;
 
     //exp(ipx)
     auto &mom_phase = envGet(LatticeComplex, SeqmomphName_);
@@ -287,98 +288,79 @@ void TMesonFieldConserved<FImpl>::execute(void)
 	 LOG(Message) << "Inserting the stochastic photon field " << par().photon << std::endl;
     }
 
-    for(unsigned int mu=par().mu_min;mu<=par().mu_max;mu++)
+
+    for(int i = 0; i < N; i++)
     {
-        if (!par().photon.empty())    	
-        {
-	    //Get the stochastic photon field, if required
-            auto &stoch_photon = envGet(EmField,  par().photon);
-    	    latt_compl =  PeekIndex<LorentzIndex>(stoch_photon, mu) * mom_phase;
-        }
-        else
-        {
-            latt_compl = mom_phase;
-        }
-        // old code
-    	// mat.SeqConservedCurrent(q, src_tmp, par().curr_type, mu, //seqConservedCurrent is called from wilsonFermion5D        
-        //                     par().tA, par().tB, latt_compl);
+        src = zero;
 
-        // new code
-        // Convert the fermion field of the all to all vector into a propagator
-        FermToProp(v1, q, 0, 0); // need to check that v1 is called correctly. probably need to loop over number of modes
-        // Run the Multiplication
-        mat.SeqConservedCurrent(q, src_tmp, par().current, mu, par().tA, par().tB, latt_compl);
-        // Convert back into a fermion
-        PropToFerm(src_tmp_ferm, src_tmp, 0, 0);
-	src += src_tmp_ferm; // need to chenge this so the result is v1 to save memory
+        for(unsigned int mu=par().mu_min;mu<=par().mu_max;mu++)
+        {
+            if (!par().photon.empty())    	
+            {
+            //Get the stochastic photon field, if required
+                auto &stoch_photon = envGet(EmField,  par().photon);
+                latt_compl =  PeekIndex<LorentzIndex>(stoch_photon, mu) * mom_phase;
+            }
+            else
+            {
+                latt_compl = mom_phase;
+            }
+            // old code
+            // mat.SeqConservedCurrent(q, src_tmp, par().curr_type, mu, //seqConservedCurrent is called from wilsonFermion5D        
+            //                     par().tA, par().tB, latt_compl);
 
-    }	
+            // new code
+            // Convert the fermion field of the all to all vector into a propagator
+            FermToProp(v1[i], q, 0, 0); // need to check that v1 is called correctly. probably need to loop over number of modes
+            // Run the Multiplication
+            mat.SeqConservedCurrent(q, src_tmp, par().current, mu, par().tA, par().tB, latt_compl);
+            // Convert back into a fermion
+            PropToFerm(src_tmp_ferm, src_tmp, 0, 0);
+        src += src_tmp_ferm;
+
+        v_con[i] = src;
+        }
+
+    }
+
+    // multiply be gamma matrices as required
 
     for (unsigned int i = 0; i < N; i++)
-        {
-            for (unsigned int j = 0; j < N; j++)
-            {
-                sliceInnerProductVector(MF_x, adj(w1[j]), v1[i], Tp);
-                sliceInnerProductVector(MF_y, adj(w1[i]), v1[j], Tp);
-                for (unsigned int t = 0; t < nt; ++t)
-                {
-                    tmp[t] += TensorRemove(MF_x[t] * MF_y[t]);
-                }
-            }
-            if (i % 10 == 0)
-            {
-                LOG(Message) << "Mf for i: " << i << " of " << N << std::endl;
-            }
-        }
-
-        for (unsigned int t = 0; t < nt; ++t)
-        {
-            result.corr[t] = tmp[t];
-            result.MFx[t] = MF_x[t];
-            result.MFy[t] = MF_y[t];
-        }
-
-        saveResult(par().output, "meson", result);
-
-
-
-
-
-
-    // IGNORE the rmaining code
-
-    // get w vector
-
-        // low modes
-        low_w();
-        // high modes
-        high_w();
-    // contract w with v_seq
-    
-    Pi_z1 = slicesum(adj(w)*v);
-
-    Pi_z2 = sliceSum(v*adj(w));
-
-    // Get meson field for source and sink from memory
-    Pi_x = envGet();
-    Pi_y = envGet();
-
-    // produce meson
-
-    M = Pi_x*Pi_z1*Pi_y*Pi_z2;
-
-    for (unsigned int t = 0; t < c.size(); ++t)
     {
-        result[i].corr[t] = TensorRemove(c[t]);
+        v1[i] = gSnk * v1[i];
     }
-    // save result
 
+
+    for(int i = 0; i < N; i++)
+    {
+    
+        for (unsigned int j = 0; j < N; j++)
+        {
+            sliceInnerProductVector(MF_x, adj(w1[j]), v1[i], Tp);
+            sliceInnerProductVector(MF_y, adj(w1[i]), v1[j], Tp); // why differnt indices? the same vectors are used?
+            sliceInnerProductVector(MF_z1, adj(w1[i]), v1_con[j], Tp);
+            sliceInnerProductVector(MF_z2, adj(w1[j]), v1_con[i], Tp);
+
+            //perform the contraction.
+            for (unsigned int t = 0; t < nt; ++t)
+            {
+                tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t]);
+            }
+        }
+        if (i % 10 == 0)
+        {
+            LOG(Message) << "Mf for i: " << i << " of " << N << std::endl;
+        }
+    }
+
+    for (unsigned int t = 0; t < nt; ++t)
+    {
+        result.corr[t] = tmp[t];
+        result.MFx[t] = MF_x[t];
+        result.MFy[t] = MF_y[t];
+    
     saveResult(par().output, "mesonQEDexch", result);
 
-    //Todo
-    //1) Do I need to loop over modes to get the meson field creation to fit in memory?
-    //2) Check the types used in the memory allocation in setup are correct.
-    //3) Attempt to build grid with this.
 }
 END_MODULE_NAMESPACE
 
