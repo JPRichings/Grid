@@ -73,7 +73,8 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
                                                 Gamma::Algebra, gamma_src,
                                                 std::vector<Complex>, corr,
                                                 std::vector<Complex>, MFx,
-                                                std::vector<Complex>, MFy);
+                                                std::vector<Complex>, MFz1);  
+                                                //std::vector<Complex>, MFy);
         };
 
 
@@ -167,9 +168,9 @@ void TMesonFieldConserved<FImpl>::setup(void)
     //envTmp(FermionField, "v2", 1, N, FermionField(env().getGrid(1)));
 
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
-    envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
+    //envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z1", 1, nt);
-    envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
+    //envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
     envTmp(std::vector<ComplexD>, "tmp", 1, nt);
 }
 // execution ///////////////////////////////////////////////////////////////////
@@ -197,7 +198,8 @@ void TMesonFieldConserved<FImpl>::execute(void)
     result.gamma_src = gammaList[0].second
     result.corr.resize(nt);
     result.MFx.resize(nt);
-    result.MFy.resize(nt);
+    result.MFz1.resize(nt);
+    //result.MFy.resize(nt);
 
     int Nl = par().Nl;
     int N = par().N;
@@ -206,22 +208,25 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
     // get temporary volumes
     envGetTmp(std::vector<ComplexD>, MF_x);
-    envGetTmp(std::vector<ComplexD>, MF_y);
-    envGetTmp(std::vector<ComplexD>, MF_x);
-    envGetTmp(std::vector<ComplexD>, MF_y);
+    //envGetTmp(std::vector<ComplexD>, MF_y);
+    envGetTmp(std::vector<ComplexD>, MF_z1);
+    //envGetTmp(std::vector<ComplexD>, MF_y);
     envGetTmp(std::vector<ComplexD>, tmp);
 
+    // Check the the initialization of tmp.
     for (unsigned int t = 0; t < nt; ++t)
     {
-        tmp[t] = TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t] * 0.0);
+        tmp[t] = TensorRemove(MF_x[t] * MF_z1[t] * MF_x[t] * MF_z1[t] * 0.0);
     }
 
     Gamma gSnk(gammaList[0].first);
     Gamma gSrc(gammaList[0].second);
 
-    auto &a2a1_fn = envGetDerived(A2ABase, A2AReturn, par().A2A1 + "_ret");
-    //auto &a2a2_fn = envGetDerived(A2ABase, A2AReturn, par().A2A2 + "_ret");
 
+    // Get a pointer to the derived tyoe that returns the all to all vectors
+    auto &a2a1_fn = envGetDerived(A2ABase, A2AReturn, par().A2A1 + "_ret");
+
+    // Get temp fermion fields 
     envGetTmp(std::vector<FermionField>, w1);
     envGetTmp(std::vector<FermionField>, v1);
     envGetTmp(std::vector<FermionField>, v1_con);
@@ -257,8 +262,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
     auto &src = envGet(FermionField, getName());
     envGetTmp(PropagaorField, src_tmp);
-    src_tmp_ferm = src; // why is this here?
-    // auto &V   = envGet(FermionField, par().V); no longer required as vectors generatedin this module
+    src_tmp_ferm = src; // this is here for vera found that grid wouldn't compile without it.
     auto &q = envGet(PropagatorField, q);
     auto &mat = envGet(FMat, par().action);
     envGetTmp(LatticeComplex, latt_compl);
@@ -330,21 +334,21 @@ void TMesonFieldConserved<FImpl>::execute(void)
         v1[i] = gSnk * v1[i];
     }
 
-
     for(int i = 0; i < N; i++)
     {
     
         for (unsigned int j = 0; j < N; j++)
         {
             sliceInnerProductVector(MF_x, adj(w1[j]), v1[i], Tp);
-            sliceInnerProductVector(MF_y, adj(w1[i]), v1[j], Tp); // why differnt indices? the same vectors are used?
+            //sliceInnerProductVector(MF_y, adj(w1[i]), v1[j], Tp); // why differnt indices? the same vectors are used?
             sliceInnerProductVector(MF_z1, adj(w1[i]), v1_con[j], Tp);
-            sliceInnerProductVector(MF_z2, adj(w1[j]), v1_con[i], Tp);
+            //sliceInnerProductVector(MF_z2, adj(w1[j]), v1_con[i], Tp);
 
             //perform the contraction.
             for (unsigned int t = 0; t < nt; ++t)
             {
-                tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t]);
+                //tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t]);
+                tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_x[t] * MF_z1[t]);
             }
         }
         if (i % 10 == 0)
@@ -357,7 +361,8 @@ void TMesonFieldConserved<FImpl>::execute(void)
     {
         result.corr[t] = tmp[t];
         result.MFx[t] = MF_x[t];
-        result.MFy[t] = MF_y[t];
+        resuslt.MFz1[t] = MF_z1[t];
+        //result.MFy[t] = MF_y[t];
     
     saveResult(par().output, "mesonQEDexch", result);
 
