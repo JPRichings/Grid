@@ -164,8 +164,8 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envTmp(std::vector<FermionField>, "w1", 1, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1", 1, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1_con", 1, N, FermionField(env().getGrid(1)));
-    //envTmp(FermionField, "w2", 1, N, FermionField(env().getGrid(1)));
-    //envTmp(FermionField, "v2", 1, N, FermionField(env().getGrid(1)));
+    envTmpLat(FermionField, "tmpv_5d", Ls_);
+    envTmpLat(FermionField, "tmpw_5d", Ls_);
 
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
     //envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
@@ -224,18 +224,22 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
 
     // Get a pointer to the derived tyoe that returns the all to all vectors
-    auto &a2a1_fn = envGetDerived(A2ABase, A2AReturn, par().A2A1 + "_ret");
-
+    auto &a2a1_fn = envGet(A2ABase, par().A2A1 + "_ret");
+    auto &a2a2_fn = envGet(A2ABase, par().A2A1 + "_ret");
+    
     // Get temp fermion fields 
     envGetTmp(std::vector<FermionField>, w1);
     envGetTmp(std::vector<FermionField>, v1);
     envGetTmp(std::vector<FermionField>, v1_con);
+    envGetTmp(FermionField, tmpv_5d);
+    envGetTmp(FermionField, tmpw_5d);
 
     // Get v and w vectors
     LOG(Message) << "Finding v and w vectors for N =  " << N << std::endl;
     for (int i = 0; i < N; i++)
     {
-        a2a1_fn(i, v1[i], w1[i]);
+        a2a1_fn.return_v(i, tmpv_5d, v1[i]);
+        a2a1_fn.return_w(i, tmpw_5d, w1[i]);
     }
     LOG(Message) << "Found v and w vectors for N =  " << N << std::endl;
 
@@ -322,7 +326,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
             PropToFerm(src_tmp_ferm, src_tmp, 0, 0);
         src += src_tmp_ferm;
 
-        v_con[i] = src;
+        v1_con[i] = src;
         }
 
     }
@@ -333,22 +337,37 @@ void TMesonFieldConserved<FImpl>::execute(void)
     {
         v1[i] = gSnk * v1[i];
     }
+    // Define ty
+    int ty;
 
+    // start contraction loop
     for(int i = 0; i < N; i++)
     {
     
         for (unsigned int j = 0; j < N; j++)
         {
             sliceInnerProductVector(MF_x, adj(w1[j]), v1[i], Tp);
-            //sliceInnerProductVector(MF_y, adj(w1[i]), v1[j], Tp); // why differnt indices? the same vectors are used?
             sliceInnerProductVector(MF_z1, adj(w1[i]), v1_con[j], Tp);
-            //sliceInnerProductVector(MF_z2, adj(w1[j]), v1_con[i], Tp);
 
             //perform the contraction.
             for (unsigned int t = 0; t < nt; ++t)
             {
-                //tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t]);
-                tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_x[t] * MF_z1[t]);
+                for (unsigned int tx = 0; tx < nt; tx++)
+                {   
+                    ty = (t + tx) % nt;
+
+                    for (unsigned int tz1 = tx; tz1 < ty; tz1++ )
+                    {
+                        for (unsigned int tz2 = tx; tz2 < ty; tz2++)
+                        {
+                            // how does the time dependance work with the 4 meson fields here ?
+                            //tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t]);
+                            tmp[t] += TensorRemove(MF_x[tx] * MF_z1[tz1] * MF_x[ty] * MF_z1[tz2]);
+                        }
+                    }
+
+                }
+
             }
         }
         if (i % 10 == 0)
@@ -357,9 +376,11 @@ void TMesonFieldConserved<FImpl>::execute(void)
         }
     }
 
+    double NTinv = 1.0 / static_cast<double>(nt);
+
     for (unsigned int t = 0; t < nt; ++t)
     {
-        result.corr[t] = tmp[t];
+        result.corr[t] = NTinv * tmp[t];
         result.MFx[t] = MF_x[t];
         resuslt.MFz1[t] = MF_z1[t];
         //result.MFy[t] = MF_y[t];
