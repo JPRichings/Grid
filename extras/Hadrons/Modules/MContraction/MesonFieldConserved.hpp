@@ -71,9 +71,9 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
                 GRID_SERIALIZABLE_CLASS_MEMBERS(Result,
                                                 Gamma::Algebra, gamma_snk,
                                                 Gamma::Algebra, gamma_src,
-                                                std::vector<Complex>, corr,
-                                                std::vector<Complex>, MFx,
-                                                std::vector<Complex>, MFz1);  
+                                                std::vector<Complex>, corr);
+                                               // std::vector<Complex>, MFx,
+                                                //std::vector<Complex>, MFz1);  
                                                 //std::vector<Complex>, MFy);
         };
 
@@ -168,9 +168,9 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envTmpLat(FermionField, "tmpw_5d", Ls_);
 
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
-    //envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
+    envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z1", 1, nt);
-    //envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
+    envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
     envTmp(std::vector<ComplexD>, "tmp", 1, nt);
 }
 // execution ///////////////////////////////////////////////////////////////////
@@ -208,9 +208,9 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
     // get temporary volumes
     envGetTmp(std::vector<ComplexD>, MF_x);
-    //envGetTmp(std::vector<ComplexD>, MF_y);
+    envGetTmp(std::vector<ComplexD>, MF_y);
     envGetTmp(std::vector<ComplexD>, MF_z1);
-    //envGetTmp(std::vector<ComplexD>, MF_y);
+    envGetTmp(std::vector<ComplexD>, MF_z2);
     envGetTmp(std::vector<ComplexD>, tmp);
 
     // Check the the initialization of tmp.
@@ -343,32 +343,38 @@ void TMesonFieldConserved<FImpl>::execute(void)
     // start contraction loop
     for(int i = 0; i < N; i++)
     {
-    
         for (unsigned int j = 0; j < N; j++)
         {
-            sliceInnerProductVector(MF_x, adj(w1[j]), v1[i], Tp);
-            sliceInnerProductVector(MF_z1, adj(w1[i]), v1_con[j], Tp);
-
-            //perform the contraction.
-            for (unsigned int t = 0; t < nt; ++t)
+            for (unsigned int k = 0; k < N; k++)
             {
-                for (unsigned int tx = 0; tx < nt; tx++)
-                {   
-                    ty = (t + tx) % nt;
+                for (unsigned int l = 0; l < N; l++)
+                {
+                    sliceInnerProductVector(MF_x, adj(w1[l]), v1[i], Tp);
+                    sliceInnerProductVector(MF_y, adj(w1[j]), v1[k], Tp);
+                    sliceInnerProductVector(MF_z1, adj(w1[i]), v1_con[j], Tp);
+                    sliceInnerProductVector(MF_z2, adj(W1[k]), v1_con[l], Tp);
 
-                    for (unsigned int tz1 = tx; tz1 < ty; tz1++ )
+                    //perform the contraction.
+                    for (unsigned int t = 0; t < nt; ++t)
                     {
-                        for (unsigned int tz2 = tx; tz2 < ty; tz2++)
-                        {
-                            // how does the time dependance work with the 4 meson fields here ?
-                            //tmp[t] += TensorRemove(MF_x[t] * MF_z1[t] * MF_y[t] * MF_z2[t]);
-                            tmp[t] += TensorRemove(MF_x[tx] * MF_z1[tz1] * MF_x[ty] * MF_z1[tz2]);
+                        for (unsigned int tx = 0; tx < nt; tx++)
+                        {   
+                            ty = (t + tx) % nt;
+
+                            for (unsigned int tz1 = 0; tz1 < nt; tz1++ )
+                            {
+                                for (unsigned int tz2 = 0; tz2 < nt; tz2++)
+                                {
+                                tmp[t] += TensorRemove(MF_x[tx] * MF_z1[tz1] * MF_y[ty] * MF_z2[tz2]);
+                                }
+                            }
+
                         }
                     }
-
                 }
 
             }
+            
         }
         if (i % 10 == 0)
         {
@@ -381,8 +387,8 @@ void TMesonFieldConserved<FImpl>::execute(void)
     for (unsigned int t = 0; t < nt; ++t)
     {
         result.corr[t] = NTinv * tmp[t];
-        result.MFx[t] = MF_x[t];
-        resuslt.MFz1[t] = MF_z1[t];
+        //result.MFx[t] = MF_x[t];
+        //resuslt.MFz1[t] = MF_z1[t];
         //result.MFy[t] = MF_y[t];
     
     saveResult(par().output, "mesonQEDexch", result);
