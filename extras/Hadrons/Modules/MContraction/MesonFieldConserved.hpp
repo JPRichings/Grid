@@ -1,3 +1,32 @@
+/*************************************************************************************
+
+Grid physics library, www.github.com/paboyle/Grid
+
+Source file: ./lib/qcd/action/fermion/WilsonFermion.cc
+
+Copyright (C) 2015
+
+Author: James Richings <j.p.richings@soton.ac.uk>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+See the full license in the file "LICENSE" in the top level distribution
+directory
+*************************************************************************************/
+
+
 #ifndef Hadrons_MContraction_MesonFieldConserved_hpp_
 #define Hadrons_MContraction_MesonFieldConserved_hpp_
 
@@ -42,13 +71,11 @@ public:
                                     int, N,
                                     std::string, A2A1,
                                     std::string, A2A2,
-                                    std::string, epack1,
-                                    std::string, epack2,
                                     std::string, gammas,
                                     std::string, output,
                                     std::string,  action,
-                                    unsigned int, tA,
-                                    unsigned int, tB,
+                                    unsigned int tA,
+                                    unsigned int tB,
                                     Current,      curr_type,
                                     unsigned int, mu_min,
                                     unsigned int, mu_max,
@@ -72,9 +99,6 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
                                                 Gamma::Algebra, gamma_snk,
                                                 Gamma::Algebra, gamma_src,
                                                 std::vector<Complex>, corr);
-                                               // std::vector<Complex>, MFx,
-                                                //std::vector<Complex>, MFz1);  
-                                                //std::vector<Complex>, MFy);
         };
 
 
@@ -98,8 +122,8 @@ private:
     std::string SeqmomphName_;
 };
 
-MODULE_REGISTER(MesonFieldConserved, TMesonFieldConserved, MContraction);
-
+MODULE_REGISTER(MesonFieldConserved, ARG(TMesonFieldConserved<FIMPL>), MContraction);
+MODULE_REGISTER(ZMesonFieldConserved, ARG(TMesonFieldConserved<ZFIMPL>), MContraction);
 /******************************************************************************
  *                  MesonFieldConserved  implementation                       *
  ******************************************************************************/
@@ -113,16 +137,10 @@ TMesonFieldConserved<FIpml>::TMesonFieldConserved(const std::string name)
 template<type FImpl>
 std::vector<std::string> TMesonFieldConserved<FImpl>::getInput(void)
 {
-    std::vecotr<std<std::string> in = {par().q, par().action, par().A2A1, par().A2A2};
+    std::vecotr<std<std::string> in = {par().action, par().A2A1, par().A2A2};
     if (!par().photon.empty()) in.push_back(par().photon);
     in.push_back(par().A2A1 + "_ret");
     in.push_back(par().A2A2 + "_ret");
-    int Nl = par().Nl;
-    if (Nl > 0)
-    {
-        in.push_back(par().epack1);
-        in.push_back(par().epack2);
-    }
 
     return in;
 }
@@ -149,13 +167,13 @@ void TMesonFieldConserved<FImpl>::setup(void)
 {   
     // for seq conserved
     auto Ls_ = env().getObjectLs(par().action);
-    envCreateLat(FermionField, getName(), Ls_);
-    envTempLat(FermionField, "src_tmp_ferm");
+    envTmpLat(FermionField, getName(), Ls_);
+    envTmpLat(FermionField, "src_tmp_ferm");
     envTmpLat(PropagatorField, "src_tmp");
     envCacheLat(LatticeComplex, SeqmomphName_);
     envTmpLat(LatticeComplex, "coor");
     envTmpLat(LatticeComplex, "latt_compl");
-    envTempLat(PropagatorField, "q");
+    envTempLat(PropagatorField, "q"); // delete once template
 
     // for A2A
 
@@ -163,9 +181,11 @@ void TMesonFieldConserved<FImpl>::setup(void)
     int N = par().N;
     envTmp(std::vector<FermionField>, "w1", 1, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1", 1, N, FermionField(env().getGrid(1)));
-    envTmp(std::vector<FermionField>, "v1_con", 1, N, FermionField(env().getGrid(1)));
-    envTmpLat(FermionField, "tmpv_5d", Ls_);
-    envTmpLat(FermionField, "tmpw_5d", Ls_);
+    //envTmp(std::vector<FermionField>, "v1_con", Ls_, N, FermionField(env().getGrid(1)));
+    envTmp(std::vector<FermionField>, "w1_5d", Ls_, N, FermionField(env().getGrid(1)));
+    envTmp(std::vector<FermionField>, "v1_5d", Ls_, N, FermionField(env().getGrid(1)));
+    //envTmpLat(FermionField, "tmpv_5d", Ls_);
+    //envTmpLat(FermionField, "tmpw_5d", Ls_);
 
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
@@ -197,8 +217,8 @@ void TMesonFieldConserved<FImpl>::execute(void)
     result.gamma_snk = gammaList[0].first
     result.gamma_src = gammaList[0].second
     result.corr.resize(nt);
-    result.MFx.resize(nt);
-    result.MFz1.resize(nt);
+    //result.MFx.resize(nt);
+    //result.MFz1.resize(nt);
     //result.MFy.resize(nt);
 
     int Nl = par().Nl;
@@ -230,23 +250,23 @@ void TMesonFieldConserved<FImpl>::execute(void)
     // Get temp fermion fields 
     envGetTmp(std::vector<FermionField>, w1);
     envGetTmp(std::vector<FermionField>, v1);
-    envGetTmp(std::vector<FermionField>, v1_con);
-    envGetTmp(FermionField, tmpv_5d);
-    envGetTmp(FermionField, tmpw_5d);
+    //envGetTmp(std::vector<FermionField>, v1_con);
+    envGetTmp(std::vector<FermionField>, w1_5d);
+    envGetTmp(std::vector<FermionField>, v1_5d);
 
     // Get v and w vectors
     LOG(Message) << "Finding v and w vectors for N =  " << N << std::endl;
     for (int i = 0; i < N; i++)
     {
-        a2a1_fn.return_v(i, tmpv_5d, v1[i]);
-        a2a1_fn.return_w(i, tmpw_5d, w1[i]);
+        a2a1_fn.return_v(i, v1_5d[i], v1[i]);
+        a2a1_fn.return_w(i, w1_5d[i], w1[i]); // remove this to lower down
     }
     LOG(Message) << "Found v and w vectors for N =  " << N << std::endl;
 
 
     // sequential converved //
 
-    if (par().tA == par().tB)
+   /* if (par().tA == par().tB)
     {
         LOG(Message) << "Generating A2A sequential V_i with conserved "
                      << par().curr_type << " current at " 
@@ -262,16 +282,15 @@ void TMesonFieldConserved<FImpl>::execute(void)
                      << par().tB << " summed over the indices " 
 		             << par().mu_min << " <= mu <= " << par().mu_max
 	                 << std::endl;
-    }
+    }*/
 
-    auto &src = envGet(FermionField, getName());
-    envGetTmp(PropagaorField, src_tmp);
+    envGetTmp(FermionField, src);
+    envGetTmp(PropagatorField, src_tmp);
+    envGetTmp(FermionField, src_tmp_ferm);
     src_tmp_ferm = src; // this is here for vera found that grid wouldn't compile without it.
-    auto &q = envGet(PropagatorField, q);
+    envGetTmp(PropagatorField, q);
     auto &mat = envGet(FMat, par().action);
     envGetTmp(LatticeComplex, latt_compl);
-
-    // src = zero;
 
     //exp(ipx)
     auto &mom_phase = envGet(LatticeComplex, SeqmomphName_);
@@ -319,16 +338,14 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
             // new code
             // Convert the fermion field of the all to all vector into a propagator
-            FermToProp(v1[i], q, 0, 0); // need to check that v1 is called correctly. probably need to loop over number of modes
+            FermToProp(v1_5d[i], q, 0, 0); // need to check that v1 is called correctly. probably need to loop over number of modes
             // Run the Multiplication
             mat.SeqConservedCurrent(q, src_tmp, par().current, mu, par().tA, par().tB, latt_compl);
             // Convert back into a fermion
             PropToFerm(src_tmp_ferm, src_tmp, 0, 0);
         src += src_tmp_ferm;
-
-        v1_con[i] = src;
         }
-
+        v1_5d[i] = src;
     }
 
     // multiply be gamma matrices as required
@@ -351,8 +368,18 @@ void TMesonFieldConserved<FImpl>::execute(void)
                 {
                     sliceInnerProductVector(MF_x, adj(w1[l]), v1[i], Tp);
                     sliceInnerProductVector(MF_y, adj(w1[j]), v1[k], Tp);
-                    sliceInnerProductVector(MF_z1, adj(w1[i]), v1_con[j], Tp);
-                    sliceInnerProductVector(MF_z2, adj(W1[k]), v1_con[l], Tp);
+                    sliceInnerProductVector(MF_z1_5d, adj(w1_5d[i]), v1_5d[j], Tp); // MF_z1_5d define
+                    sliceInnerProductVector(MF_z2_5d, adj(W1_5d[k]), v1_5d[l], Tp); // MF_z2_5d define
+                    //sum over 5th dim
+                    MF_z1 = zero;
+                    MF_z2 = zero;
+                    for (unsigned int s = 0, s < Ls_, s++)
+                    {
+                        ExtractSlice(tmp_4d, MF_z1_5d,s,0);
+                        MF_z1+=tmp_4d;
+                        ExtractSlice(tmp_4d, MF_z2_5d,s,0);
+                        MF_z2+=tmp_4d;
+                    }
 
                     //perform the contraction.
                     for (unsigned int t = 0; t < nt; ++t)
@@ -361,11 +388,12 @@ void TMesonFieldConserved<FImpl>::execute(void)
                         {   
                             ty = (t + tx) % nt;
 
-                            for (unsigned int tz1 = 0; tz1 < nt; tz1++ )
+                            for (unsigned int tz1 = 0; tz1 < nt; tz1++)
                             {
                                 for (unsigned int tz2 = 0; tz2 < nt; tz2++)
                                 {
-                                tmp[t] += TensorRemove(MF_x[tx] * MF_z1[tz1] * MF_y[ty] * MF_z2[tz2]);
+                                tmp_exch[t] += TensorRemove(MF_x[tx] * MF_z1[tz1] * MF_y[ty] * MF_z2[tz2]);
+                                tmp_self[t] += TensorRemove(MF_x[tx] * MF_z1[tz1] * MF_z2[tz2] * MF_y[ty]);
                                 }
                             }
 
@@ -386,11 +414,9 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
     for (unsigned int t = 0; t < nt; ++t)
     {
-        result.corr[t] = NTinv * tmp[t];
-        //result.MFx[t] = MF_x[t];
-        //resuslt.MFz1[t] = MF_z1[t];
-        //result.MFy[t] = MF_y[t];
-    
+        result.corr_exch[t] = NTinv * tmp_exch[t];
+        result.corr_self[t] = NTinv * tmp_self[t];
+    }
     saveResult(par().output, "mesonQEDexch", result);
 
 }
