@@ -5,7 +5,6 @@
 #include <Grid/Hadrons/Modules/MScalar/ChargedProp.hpp>
 #include <Grid/Hadrons/Modules/MScalar/VPCounterTerms.hpp>
 #include <Grid/Hadrons/Modules/MContraction/Baryon.hpp>
-#include <Grid/Hadrons/Modules/MContraction/MesonFieldConserved.hpp>
 #include <Grid/Hadrons/Modules/MContraction/WardIdentity.hpp>
 #include <Grid/Hadrons/Modules/MContraction/WeakHamiltonian.hpp>
 #include <Grid/Hadrons/Modules/MContraction/Gamma3pt.hpp>

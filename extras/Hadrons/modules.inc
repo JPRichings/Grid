@@ -12,7 +12,6 @@ modules_cc =\
   Modules/MContraction/WeakHamiltonianEye.cc \
   Modules/MContraction/WeakNeutral4ptDisc.cc \
   Modules/MContraction/Meson.cc \
-  Modules/MContraction/MesonFieldConserved.cc \
   Modules/MSource/Z2.cc \
   Modules/MSource/SeqConserved.cc \
   Modules/MSource/Point.cc \
@@ -60,7 +59,6 @@ modules_hpp =\
   Modules/MScalar/ChargedProp.hpp \
   Modules/MScalar/VPCounterTerms.hpp \
   Modules/MContraction/Baryon.hpp \
-  Modules/MContraction/MesonFieldConserved.hpp \
   Modules/MContraction/WardIdentity.hpp \
   Modules/MContraction/WeakHamiltonian.hpp \
   Modules/MContraction/Gamma3pt.hpp \
