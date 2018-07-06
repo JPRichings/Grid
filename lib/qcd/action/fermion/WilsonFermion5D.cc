@@ -1040,7 +1040,7 @@ void WilsonFermion5D<Impl>::SeqConservedCurrent(PropagatorField &q_in,
             if (timeSlices > 0)
             {
 		unsigned int sF = sU * LLs + s;
-                Kernels::SeqConservedCurrentSiteFwd(tmp2._odata[sU], 
+                Kernels::SeqConservedCurrentSiteFwd<SitePropagator>(tmp2._odata[sU], 
                                               q_out._odata[sF], Umu, sU,
                                               mu, t_mask, switch_sgn);
             }
@@ -1066,7 +1066,7 @@ void WilsonFermion5D<Impl>::SeqConservedCurrent(PropagatorField &q_in,
             if (timeSlices > 0)
             {
 		unsigned int sF = sU * LLs + s; 
-        	Kernels::SeqConservedCurrentSiteBwd(tmp2._odata[sU], 
+        	Kernels::SeqConservedCurrentSiteBwd<SitePropagator>(tmp2._odata[sU], 
                                              q_out._odata[sF], Umu, sU,
                                              mu, t_mask, axial_sign);
             }

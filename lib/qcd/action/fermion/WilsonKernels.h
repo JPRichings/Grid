@@ -183,6 +183,16 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   // Utilities for inserting Wilson conserved current.
   //////////////////////////////////////////////////////////////////////////////
+  /*******************************************************************************
+   * Conserved current utilities for Wilson fermions, for contracting propagators
+   * to make a conserved current sink or inserting the conserved current 
+   * sequentially. Common to both 4D and 5D.
+   ******************************************************************************/
+  // N.B. Functions below assume a -1/2 factor within U.
+  #define WilsonCurrentFwd(expr, mu) ((expr - Gamma::gmu[mu]*expr))
+  #define WilsonCurrentBwd(expr, mu) ((expr + Gamma::gmu[mu]*expr))
+
+
   void ContractConservedCurrentSiteFwd(const SitePropagator &q_in_1,
                                        const SitePropagator &q_in_2,
                                        SitePropagator &q_out,
@@ -197,7 +207,70 @@ public:
                                        unsigned int sU,
                                        unsigned int mu,
                                        bool switch_sign = false);
-  void SeqConservedCurrentSiteFwd(const SitePropagator &q_in, 
+  /*******************************************************************************
+ * Name: SeqConservedCurrentSiteFwd
+ * Operation: (1/2) * U(x) * (g[mu] - 1) * q[x + mu]
+ * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
+ *        - Pass in q_in shifted in +ve mu direction.
+ ******************************************************************************/
+  template<class Impl, class Site>
+  void WilsonKernels<Impl>::SeqConservedCurrentSiteFwd(const Site &q_in,
+                                                      Site &q_out,
+                                                      DoubledGaugeField &U,
+                                                      unsigned int sU,
+                                                      unsigned int mu,
+                                                      vInteger t_mask,
+                                                      bool switch_sign = false)
+  {
+      Site result;
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu);
+      result = WilsonCurrentFwd(result, mu);
+
+      // Zero any unwanted timeslice entries.
+      result = predicatedWhere(t_mask, result, 0.*result);
+
+      if (switch_sign)
+      {
+          q_out -= result;
+      }
+      else
+      {
+          q_out += result;
+      }
+  }
+
+  /*******************************************************************************
+   * Name: SeqConservedCurrentSiteFwd
+   * Operation: (1/2) * U^dag(x) * (g[mu] + 1) * q[x - mu]
+   * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
+   *        - Pass in q_in shifted in -ve mu direction.
+   ******************************************************************************/
+  template<class Impl, class Site>
+  void WilsonKernels<Impl>::SeqConservedCurrentSiteBwd(const Site &q_in, 
+                                                      Site &q_out,
+                                                      DoubledGaugeField &U,
+                                                      unsigned int sU,
+                                                      unsigned int mu,
+                                                      vInteger t_mask,
+                                                      bool switch_sign = false)
+  {
+      Site result;
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu + Nd);
+      result = WilsonCurrentBwd(result, mu);
+
+      // Zero any unwanted timeslice entries.
+      result = predicatedWhere(t_mask, result, 0.*result);
+
+      if (switch_sign)
+      {
+          q_out += result;
+      }
+      else
+      {
+          q_out -= result;
+      }
+  }
+  /*void SeqConservedCurrentSiteFwd(const SitePropagator &q_in, 
                                   SitePropagator &q_out,
                                   DoubledGaugeField &U,
                                   unsigned int sU,
@@ -211,6 +284,7 @@ public:
                                   unsigned int mu,
                                   vInteger t_mask,
                                   bool switch_sign = false);
+  */
 
 private:
      // Specialised variants

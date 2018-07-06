@@ -153,6 +153,14 @@ namespace Grid {
                                        unsigned int tmin, 
                                        unsigned int tmax,
                                        ComplexField &lattice_cmplx)=0;
+      /*virtual void SeqConservedCurrent(FermionField &q_in, 
+                                       FermionField &q_out,
+                                       Current curr_type,
+                                       unsigned int mu,
+                                       unsigned int tmin, 
+                                       unsigned int tmax,
+                                       ComplexField &lattice_cmplx)=0;
+      */
       ///////////////////////////////////////////////
       // Physical field import/export
       ///////////////////////////////////////////////
