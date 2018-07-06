@@ -488,7 +488,7 @@ NO_CURR_SITE(GparityWilsonImplDF);
    ******************************************************************************/
   template<class Impl>
   void WilsonKernels<Impl>::SeqConservedCurrentSiteBwd(const SiteSpinor &q_in, 
-                                                      Site &q_out,
+                                                      SiteSpinor &q_out,
                                                       DoubledGaugeField &U,
                                                       unsigned int sU,
                                                       unsigned int mu,
