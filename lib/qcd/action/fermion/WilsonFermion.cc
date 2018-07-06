@@ -528,7 +528,7 @@ void WilsonFermion<Impl>::SeqConservedCurrent(PropagatorField &q_in,
 
         if (timeSlices > 0)
         {
-            Kernels::SeqConservedCurrentSiteFwd<SitePropagator>(tmpFwd._odata[sU], 
+            Kernels::SeqConservedCurrentSiteFwd(tmpFwd._odata[sU], 
                                                 q_out._odata[sU], 
                                                 Umu, sU, mu, t_mask);
         }
@@ -545,7 +545,7 @@ void WilsonFermion<Impl>::SeqConservedCurrent(PropagatorField &q_in,
 
         if (timeSlices > 0)
         {
-            Kernels::SeqConservedCurrentSiteBwd<SitePropagator>(tmpBwd._odata[sU], 
+            Kernels::SeqConservedCurrentSiteBwd(tmpBwd._odata[sU], 
                                                 q_out._odata[sU], 
                                                 Umu, sU, mu, t_mask);
         }

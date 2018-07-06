@@ -382,6 +382,135 @@ NO_CURR_SITE(GparityWilsonImplD);
 NO_CURR_SITE(GparityWilsonImplFH);
 NO_CURR_SITE(GparityWilsonImplDF);
 
+  /*******************************************************************************
+ * Name: SeqConservedCurrentSiteFwd
+ * Operation: (1/2) * U(x) * (g[mu] - 1) * q[x + mu]
+ * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
+ *        - Pass in q_in shifted in +ve mu direction.
+ ******************************************************************************/
+  template<class Impl>
+  void WilsonKernels<Impl>::SeqConservedCurrentSiteFwd(const SitePropagator &q_in,
+                                                      SitePropagator &q_out,
+                                                      DoubledGaugeField &U,
+                                                      unsigned int sU,
+                                                      unsigned int mu,
+                                                      vInteger t_mask,
+                                                      bool switch_sign)
+  {
+      SitePropagator result;
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu);
+      result = WilsonCurrentFwd(result, mu);
+
+      // Zero any unwanted timeslice entries.
+      result = predicatedWhere(t_mask, result, 0.*result);
+
+      if (switch_sign)
+      {
+          q_out -= result;
+      }
+      else
+      {
+          q_out += result;
+      }
+  }
+
+  /*******************************************************************************
+   * Name: SeqConservedCurrentSiteFwd
+   * Operation: (1/2) * U^dag(x) * (g[mu] + 1) * q[x - mu]
+   * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
+   *        - Pass in q_in shifted in -ve mu direction.
+   ******************************************************************************/
+  template<class Impl>
+  void WilsonKernels<Impl>::SeqConservedCurrentSiteBwd(const SitePropagator &q_in, 
+                                                      SitePropagator &q_out,
+                                                      DoubledGaugeField &U,
+                                                      unsigned int sU,
+                                                      unsigned int mu,
+                                                      vInteger t_mask,
+                                                      bool switch_sign)
+  {
+      SitePropagator result;
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu + Nd);
+      result = WilsonCurrentBwd(result, mu);
+
+      // Zero any unwanted timeslice entries.
+      result = predicatedWhere(t_mask, result, 0.*result);
+
+      if (switch_sign)
+      {
+          q_out += result;
+      }
+      else
+      {
+          q_out -= result;
+      }
+  }
+
+  // Site spinor implimentation
+
+    /*******************************************************************************
+ * Name: SeqConservedCurrentSiteFwd
+ * Operation: (1/2) * U(x) * (g[mu] - 1) * q[x + mu]
+ * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
+ *        - Pass in q_in shifted in +ve mu direction.
+ ******************************************************************************/
+  template<class Impl>
+  void WilsonKernels<Impl>::SeqConservedCurrentSiteFwd(const SiteSpinor &q_in,
+                                                      SiteSpinor &q_out,
+                                                      DoubledGaugeField &U,
+                                                      unsigned int sU,
+                                                      unsigned int mu,
+                                                      vInteger t_mask,
+                                                      bool switch_sign)
+  {
+      SiteSpinor result;
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu);
+      result = WilsonCurrentFwd(result, mu);
+
+      // Zero any unwanted timeslice entries.
+      result = predicatedWhere(t_mask, result, 0.*result);
+
+      if (switch_sign)
+      {
+          q_out -= result;
+      }
+      else
+      {
+          q_out += result;
+      }
+  }
+
+  /*******************************************************************************
+   * Name: SeqConservedCurrentSiteFwd
+   * Operation: (1/2) * U^dag(x) * (g[mu] + 1) * q[x - mu]
+   * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
+   *        - Pass in q_in shifted in -ve mu direction.
+   ******************************************************************************/
+  template<class Impl>
+  void WilsonKernels<Impl>::SeqConservedCurrentSiteBwd(const SiteSpinor &q_in, 
+                                                      Site &q_out,
+                                                      DoubledGaugeField &U,
+                                                      unsigned int sU,
+                                                      unsigned int mu,
+                                                      vInteger t_mask,
+                                                      bool switch_sign)
+  {
+      SiteSpinor result;
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu + Nd);
+      result = WilsonCurrentBwd(result, mu);
+
+      // Zero any unwanted timeslice entries.
+      result = predicatedWhere(t_mask, result, 0.*result);
+
+      if (switch_sign)
+      {
+          q_out += result;
+      }
+      else
+      {
+          q_out -= result;
+      }
+  }
 
 FermOpTemplateInstantiate(WilsonKernels);
 AdjointFermOpTemplateInstantiate(WilsonKernels);
