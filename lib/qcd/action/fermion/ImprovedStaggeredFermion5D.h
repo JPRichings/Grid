@@ -227,6 +227,13 @@ namespace QCD {
                              unsigned int tmin, 
                              unsigned int tmax,
                  	     ComplexField &lattice_cmplx);
+    void SeqConservedCurrent(FermionField &q_in, 
+                          FermionField &q_out,
+                          Current curr_type, 
+                          unsigned int mu,
+                          unsigned int tmin, 
+                          unsigned int tmax,
+                    ComplexField &lattice_cmplx);
   };
 
 }}

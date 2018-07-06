@@ -492,19 +492,18 @@ void WilsonFermion<Impl>::ContractConservedCurrent(PropagatorField &q_in_1,
     }
 }
 
-
-template <class Impl>
-void WilsonFermion<Impl>::SeqConservedCurrent(PropagatorField &q_in, 
-                                              PropagatorField &q_out,
-                                              Current curr_type,
+template<class Field>
+void SeqConservedCurrenttemp(Field &q_in, 
+                        Field &q_out,
+                        Current curr_type,
                                               unsigned int mu,
                                               unsigned int tmin, 
                                               unsigned int tmax,
-					      ComplexField &lattice_cmplx)
+					                                    ComplexField &lattice_cmplx)
 {
     conformable(_grid, q_in._grid);
     conformable(_grid, q_out._grid);
-    PropagatorField tmpFwd(_grid), tmpBwd(_grid), tmp(_grid);
+    Field tmpFwd(_grid), tmpBwd(_grid), tmp(_grid);
     unsigned int tshift = (mu == Tp) ? 1 : 0;
     unsigned int LLt    = GridDefaultLatt()[Tp];
 
@@ -551,7 +550,30 @@ void WilsonFermion<Impl>::SeqConservedCurrent(PropagatorField &q_in,
         }
     }
 
+}
 
+template <class Impl>
+void WilsonFermion<Impl>::SeqConservedCurrent(FermionField &q_in, 
+                                              FermionField &q_out,
+                                              Current curr_type,
+                                              unsigned int mu,
+                                              unsigned int tmin, 
+                                              unsigned int tmax,
+					                                    ComplexField &lattice_cmplx)
+{
+  SeqConservedCurrenttemp<FermionField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx)
+}
+
+template <class Impl>
+void WilsonFermion<Impl>::SeqConservedCurrent(PropagatorField &q_in, 
+                                              PropagatorField &q_out,
+                                              Current curr_type,
+                                              unsigned int mu,
+                                              unsigned int tmin, 
+                                              unsigned int tmax,
+					      ComplexField &lattice_cmplx)
+{
+  SeqConservedCurrenttemp<PropagatorField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx)
 }
 
 FermOpTemplateInstantiate(WilsonFermion);

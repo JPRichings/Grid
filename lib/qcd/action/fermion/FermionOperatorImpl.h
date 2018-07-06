@@ -234,12 +234,12 @@ namespace QCD {
                              int mu) {
        mult(&phi(), &U(mu), &chi());
     }
-    inline void multLinkSpinor(SiteSpinor &phi,
+    /*inline void multLinkSpinor(SiteSpinor &phi,
                              const SiteDoubledGaugeField &U,
                              const SiteSpinor &chi,
                              int mu) {
        mult(&phi(), &U(mu), &chi());
-    }
+    }*/
       
     template <class ref>
     inline void loadLinkElement(Simd &reg, ref &memory) {
@@ -409,7 +409,7 @@ class DomainWallVec5dImpl :  public PeriodicGaugeImpl< GaugeImplTypes< S,Represe
     mult(&phi(), &UU(), &chi());
   }
 
-  inline void multLinkSpinor(SiteSpinor &phi,
+  /*inline void multLinkSpinor(SiteSpinor &phi,
                            const SiteDoubledGaugeField &U,
                            const SiteSpinor &chi,
                            int mu) {
@@ -420,7 +420,7 @@ class DomainWallVec5dImpl :  public PeriodicGaugeImpl< GaugeImplTypes< S,Represe
       }
     }
     mult(&phi(), &UU(), &chi());
-  }
+  }*/
   inline void multLinkProp(SitePropagator &phi,
                            const SiteDoubledGaugeField &U,
                            const SitePropagator &chi,
@@ -656,11 +656,12 @@ class GparityWilsonImpl : public ConjugateGaugeImpl<GaugeImplTypes<S, Representa
     {
         assert(0);
     }
+    /*
     inline void multLinkSpinor(SiteSpinor &phi, const SiteDoubledGaugeField &U,
                              const SiteSpinor &chi, int mu)
     {
         assert(0);
-    }
+    }*/
     // Fixme: Gparity prop * link
     inline void multLinkProp(SitePropagator &phi, const SiteDoubledGaugeField &U,
                              const SitePropagator &chi, int mu)

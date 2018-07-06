@@ -996,18 +996,18 @@ void WilsonFermion5D<Impl>::ContractConservedCurrent(PropagatorField &q_in_1,
 
 
 
-template <class Impl>
-void WilsonFermion5D<Impl>::SeqConservedCurrent(PropagatorField &q_in, 
-                                                PropagatorField &q_out,
-                                                Current curr_type, 
-                                                unsigned int mu,
-                                                unsigned int tmin, 
-                                                unsigned int tmax,
-						ComplexField &lattice_cmplx)
+template <class Field>
+void SeqConservedCurrent5Dtemp(Field &q_in, 
+                              Field &q_out,
+                              Current curr_type, 
+                              unsigned int mu,
+                              unsigned int tmin, 
+                              unsigned int tmax,
+						                  ComplexField &lattice_cmplx)
 {
     conformable(q_in._grid, FermionGrid());
     conformable(q_in._grid, q_out._grid);
-    PropagatorField tmp(GaugeGrid()),tmp2(GaugeGrid());
+    Field tmp(GaugeGrid()),tmp2(GaugeGrid());
     unsigned int tshift = (mu == Tp) ? 1 : 0;
     unsigned int LLs = q_in._grid->_rdimensions[0];
     unsigned int LLt    = GridDefaultLatt()[Tp];
@@ -1072,6 +1072,29 @@ void WilsonFermion5D<Impl>::SeqConservedCurrent(PropagatorField &q_in,
             }
 	}
     }
+}
+template <class Impl>
+void WilsonFermion5D<Impl>::SeqConservedCurrent(FermionField &q_in, 
+                                              FermionField &q_out,
+                                              Current curr_type,
+                                              unsigned int mu,
+                                              unsigned int tmin, 
+                                              unsigned int tmax,
+					                                    ComplexField &lattice_cmplx)
+{
+  SeqConservedCurrenttemp<FermionField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx)
+}
+
+template <class Impl>
+void WilsonFermion5D<Impl>::SeqConservedCurrent(PropagatorField &q_in, 
+                                              PropagatorField &q_out,
+                                              Current curr_type,
+                                              unsigned int mu,
+                                              unsigned int tmin, 
+                                              unsigned int tmax,
+					      ComplexField &lattice_cmplx)
+{
+  SeqConservedCurrent5Dtemp<PropagatorField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx)
 }
 
 FermOpTemplateInstantiate(WilsonFermion5D);

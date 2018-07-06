@@ -644,7 +644,18 @@ void ImprovedStaggeredFermion5D<Impl>::SeqConservedCurrent(PropagatorField &q_in
     assert(0);
 
 }
+template <class Impl>
+void ImprovedStaggeredFermion5D<Impl>::SeqConservedCurrent(FermionField &q_in, 
+                                              FermionField &q_out,
+                                              Current curr_type,
+                                              unsigned int mu,
+                                              unsigned int tmin, 
+                                              unsigned int tmax,
+					      ComplexField &lattice_cmplx)
+{
+    assert(0);
 
+}
 FermOpStaggeredTemplateInstantiate(ImprovedStaggeredFermion5D);
 FermOpStaggeredVec5dTemplateInstantiate(ImprovedStaggeredFermion5D);
   
