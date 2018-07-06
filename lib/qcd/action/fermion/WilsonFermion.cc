@@ -492,7 +492,7 @@ void WilsonFermion<Impl>::ContractConservedCurrent(PropagatorField &q_in_1,
     }
 }
 
-template <class Impl,class Field, class ComplxField>>
+template <class Impl,class Field, class ComplxField>
 void WilsonFermion<Impl>::SeqConservedCurrenttemp(Field &q_in, 
                         Field &q_out,
                         Current curr_type,
