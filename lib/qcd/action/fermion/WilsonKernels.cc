@@ -398,7 +398,7 @@ NO_CURR_SITE(GparityWilsonImplDF);
                                                       bool switch_sign)
   {
       SitePropagator result;
-      Impl::multLinkProp(result, U._odata[sU], q_in, mu);
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu);
       result = WilsonCurrentFwd(result, mu);
 
       // Zero any unwanted timeslice entries.
@@ -430,7 +430,7 @@ NO_CURR_SITE(GparityWilsonImplDF);
                                                       bool switch_sign)
   {
       SitePropagator result;
-      Impl::multLinkProp(result, U._odata[sU], q_in, mu + Nd);
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu + Nd);
       result = WilsonCurrentBwd(result, mu);
 
       // Zero any unwanted timeslice entries.
@@ -464,7 +464,7 @@ NO_CURR_SITE(GparityWilsonImplDF);
                                                       bool switch_sign)
   {
       SiteSpinor result;
-      Impl::multLinkSpinor(result, U._odata[sU], q_in, mu);
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu);
       result = WilsonCurrentFwd(result, mu);
 
       // Zero any unwanted timeslice entries.
@@ -496,7 +496,7 @@ NO_CURR_SITE(GparityWilsonImplDF);
                                                       bool switch_sign)
   {
       SiteSpinor result;
-      Impl::multLinkSpinor(result, U._odata[sU], q_in, mu + Nd);
+      Impl::multLinkSite(result, U._odata[sU], q_in, mu + Nd);
       result = WilsonCurrentBwd(result, mu);
 
       // Zero any unwanted timeslice entries.

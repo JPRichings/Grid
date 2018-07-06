@@ -214,6 +214,20 @@ namespace QCD {
       mult(&phi(), &U(mu), &chi());
     }
     
+    inline void multLinkSite(SitePropagator &phi,
+                             const SiteDoubledGaugeField &U,
+                             const SitePropagator &chi,
+                             int mu) {
+       mult(&phi(), &U(mu), &chi());
+    }
+    inline void multLinkSite(SiteSpinor &phi,
+                             const SiteDoubledGaugeField &U,
+                             const SiteSpinor &chi,
+                             int mu) {
+       mult(&phi(), &U(mu), &chi());
+    } 
+
+
     inline void multLinkProp(SitePropagator &phi,
                              const SiteDoubledGaugeField &U,
                              const SitePropagator &chi,
@@ -369,7 +383,32 @@ class DomainWallVec5dImpl :  public PeriodicGaugeImpl< GaugeImplTypes< S,Represe
     }
     mult(&phi(), &UU(), &chi());
   }
-  //Checkthaqt site link Prop needs to be checked!!!
+
+  inline void multLinkSite(SiteSpinor &phi,
+                           const SiteDoubledGaugeField &U,
+                           const SiteSpinor &chi,
+                           int mu) {
+    SiteGaugeLink UU;
+    for (int i = 0; i < Dimension; i++) {
+      for (int j = 0; j < Dimension; j++) {
+        vsplat(UU()()(i, j), U(mu)()(i, j));
+      }
+    }
+    mult(&phi(), &UU(), &chi());
+  }
+  inline void multLinkSite(SitePropagator &phi,
+                           const SiteDoubledGaugeField &U,
+                           const SitePropagator &chi,
+                           int mu) {
+    SiteGaugeLink UU;
+    for (int i = 0; i < Dimension; i++) {
+      for (int j = 0; j < Dimension; j++) {
+        vsplat(UU()()(i, j), U(mu)()(i, j));
+      }
+    }
+    mult(&phi(), &UU(), &chi());
+  }
+
   inline void multLinkSpinor(SiteSpinor &phi,
                            const SiteDoubledGaugeField &U,
                            const SiteSpinor &chi,
@@ -605,6 +644,18 @@ class GparityWilsonImpl : public ConjugateGaugeImpl<GaugeImplTypes<S, Representa
    }
    
  }
+
+     inline void multLinkSite(SiteSpinor &phi, const SiteDoubledGaugeField &U,
+                             const SiteSpinor &chi, int mu)
+    {
+        assert(0);
+    }
+    // Fixme: Gparity prop * link
+    inline void multLinkSite(SitePropagator &phi, const SiteDoubledGaugeField &U,
+                             const SitePropagator &chi, int mu)
+    {
+        assert(0);
+    }
     inline void multLinkSpinor(SiteSpinor &phi, const SiteDoubledGaugeField &U,
                              const SiteSpinor &chi, int mu)
     {
