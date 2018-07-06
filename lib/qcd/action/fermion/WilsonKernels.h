@@ -213,7 +213,7 @@ public:
  * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
  *        - Pass in q_in shifted in +ve mu direction.
  ******************************************************************************/
-  template<class Impl, class Site>
+  template<class Impl, typename Site>
   void WilsonKernels<Impl>::SeqConservedCurrentSiteFwd(const Site &q_in,
                                                       Site &q_out,
                                                       DoubledGaugeField &U,
@@ -245,7 +245,7 @@ public:
    * Notes: - DoubledGaugeField U assumed to contain -1/2 factor.
    *        - Pass in q_in shifted in -ve mu direction.
    ******************************************************************************/
-  template<class Impl, class Site>
+  template<class Impl, typename Site>
   void WilsonKernels<Impl>::SeqConservedCurrentSiteBwd(const Site &q_in, 
                                                       Site &q_out,
                                                       DoubledGaugeField &U,
