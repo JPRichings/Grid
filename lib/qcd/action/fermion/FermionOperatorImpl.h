@@ -220,10 +220,9 @@ namespace QCD {
                              int mu) {
        mult(&phi(), &U(mu), &chi());
     }
-    template <class Site>
-    inline void multLinkSite(Site &phi,
+    inline void multLinkSpinor(SiteSpinor &phi,
                              const SiteDoubledGaugeField &U,
-                             const Site &chi,
+                             const SiteSpinor &chi,
                              int mu) {
        mult(&phi(), &U(mu), &chi());
     }
@@ -370,12 +369,18 @@ class DomainWallVec5dImpl :  public PeriodicGaugeImpl< GaugeImplTypes< S,Represe
     }
     mult(&phi(), &UU(), &chi());
   }
-  template <class Site>
-  inline void multLinkSite(Site &phi,
-                            const SiteDoubledGaugeField &U,
-                            const Site &chi,
-                            int mu) {
-      mult(&phi(), &U(mu), &chi());
+  //Checkthaqt site link Prop needs to be checked!!!
+  inline void multLinkSpinor(SiteSpinor &phi,
+                           const SiteDoubledGaugeField &U,
+                           const SiteSpinor &chi,
+                           int mu) {
+    SiteGaugeLink UU;
+    for (int i = 0; i < Dimension; i++) {
+      for (int j = 0; j < Dimension; j++) {
+        vsplat(UU()()(i, j), U(mu)()(i, j));
+      }
+    }
+    mult(&phi(), &UU(), &chi());
   }
   inline void multLinkProp(SitePropagator &phi,
                            const SiteDoubledGaugeField &U,
@@ -600,12 +605,10 @@ class GparityWilsonImpl : public ConjugateGaugeImpl<GaugeImplTypes<S, Representa
    }
    
  }
-    template <class Site>
-    inline void multLinkSite(Site &phi,
-                             const SiteDoubledGaugeField &U,
-                             const Site &chi,
-                             int mu) {
-       mult(&phi(), &U(mu), &chi());
+    inline void multLinkSpinor(SiteSpinor &phi, const SiteDoubledGaugeField &U,
+                             const SiteSpinor &chi, int mu)
+    {
+        assert(0);
     }
     // Fixme: Gparity prop * link
     inline void multLinkProp(SitePropagator &phi, const SiteDoubledGaugeField &U,
