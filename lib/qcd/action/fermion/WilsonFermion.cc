@@ -561,7 +561,7 @@ void WilsonFermion<Impl>::SeqConservedCurrent(FermionField &q_in,
                                               unsigned int tmax,
 					                                    ComplexField &lattice_cmplx)
 {
-  SeqConservedCurrenttemp<FermionField, ComplexField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx)
+  SeqConservedCurrenttemp<FermionField, ComplexField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx);
 }
 
 template <class Impl>
@@ -573,7 +573,7 @@ void WilsonFermion<Impl>::SeqConservedCurrent(PropagatorField &q_in,
                                               unsigned int tmax,
 					      ComplexField &lattice_cmplx)
 {
-  SeqConservedCurrenttemp<PropagatorField, ComplexField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx)
+  SeqConservedCurrenttemp<PropagatorField, ComplexField>(q_in, q_out,curr_type,mu,tmin, tmax,lattice_cmplx);
 }
 
 FermOpTemplateInstantiate(WilsonFermion);
