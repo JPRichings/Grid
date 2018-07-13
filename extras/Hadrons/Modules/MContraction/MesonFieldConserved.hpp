@@ -72,15 +72,15 @@ public:
                                     std::string, A2A1,
                                     std::string, A2A2,
                                     std::string, gammas,
-                                    std::string, output,
-                                    std::string,  action,
+                                    std::string, action,
                                     unsigned int tA,
                                     unsigned int tB,
-                                    Current,      curr_type,
+                                    Current, curr_type,
                                     unsigned int, mu_min,
                                     unsigned int, mu_max,
-                                    std::string,  mom,
-                                    std::string,  photon);
+                                    std::string, mom,
+                                    std::string, photon,
+                                    std::string, output);
 };
 
 template <typename FImpl>
@@ -114,7 +114,7 @@ public:
     // dependency relation
     virtual std::vector<std::string> getInput(void);
     virtual std::vector<std::string> getOutput(void);
-    virtual void parseGammaString(atd::vector<GammaPair> & gammaList);
+    virtual void parseGammaString(std::vector<GammaPair> & gammaList);
     // setup
     virtual void setup(void);
     // execution
@@ -131,18 +131,18 @@ MODULE_REGISTER(ZMesonFieldConserved, ARG(TMesonFieldConserved<ZFIMPL>), MContra
  ******************************************************************************/
 // constructor /////////////////////////////////////////////////////////////////
 template <typename FImpl>
-TMesonFieldConserved<FIpml>::TMesonFieldConserved(const std::string name)
+TMesonFieldConserved<FImpl>::TMesonFieldConserved(const std::string name)
 : Module<MesonFieldConservedPar>(name)
 , SeqmomphName_ (name + "_Seqmom")
 {}
 // dependencies/products ///////////////////////////////////////////////////////
-template<type FImpl>
+template<typename FImpl>
 std::vector<std::string> TMesonFieldConserved<FImpl>::getInput(void)
 {
     std::vecotr<std<std::string> in = {par().action, par().A2A1 + "_class", par().A2A2 + "_class"};
     if (!par().photon.empty()) in.push_back(par().photon);
-    //in.push_back(par().A2A1 + "_ret");
-    //in.push_back(par().A2A2 + "_ret");
+    in.push_back(par().A2A1 + "_class");
+    in.push_back(par().A2A2 + "_class");
 
     return in;
 }
@@ -156,9 +156,9 @@ std::vector<std::string> TMesonFieldConserved<FImpl>::getOutput(void)
 }
 
 template <typename FImpl>
-void TMesonFieldConserved<FImpl>::parse GammaString(std::vector<GammaPair> & gammaList)
+void TMesonFieldConserved<FImpl>::parseGammaString(std::vector<GammaPair> & gammaList)
 {
-    gammaList.clear()
+    gammaList.clear();
     //Parse individual contractions from input string.
     gammaList = strToVec<GammaPair>(Par().gammas);
 }
@@ -175,21 +175,16 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envCacheLat(LatticeComplex, SeqmomphName_);
     envTmpLat(LatticeComplex, "coor");
     envTmpLat(LatticeComplex, "latt_compl");
-    envTempLat(PropagatorField, "q"); // delete once template
+    envTempLat(PropagatorField, "q");
 
     // for A2A
     int nt = env().getDim(Tp);
     int N = par().N;
-    int Ls_ = env().getObjectLs(par().A2A1 + "_class")
-
+    //int Ls_ = env().getObjectLs(par().A2A1 + "_class");
     envTmp(std::vector<FermionField>, "w1", 1, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1", 1, N, FermionField(env().getGrid(1)));
-    //envTmp(std::vector<FermionField>, "v1_con", Ls_, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "w1_5d", Ls_, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1_5d", Ls_, N, FermionField(env().getGrid(1)));
-    //envTmpLat(FermionField, "tmpv_5d", Ls_);
-    //envTmpLat(FermionField, "tmpw_5d", Ls_);
-
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z1", 1, nt);
@@ -200,6 +195,7 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envTmp(std::vector<ComplexD>, "tmp_exch", 1,nt);
     envTmp(std::vector<ComplexD>, "tmp_self", 1,nt);
 }
+
 // execution ///////////////////////////////////////////////////////////////////
 template <typename FImpl>
 void TMesonFieldConserved<FImpl>::execute(void)
