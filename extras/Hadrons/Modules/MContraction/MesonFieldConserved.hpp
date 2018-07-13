@@ -63,6 +63,8 @@ BEGIN_HADRONS_NAMESPACE
  ******************************************************************************/
 BEGIN_MODULE_NAMESPACE(MContraction)
 
+typedef std::pair<Gamma::Algebra, Gamma::Algebra> GammaPair;
+
 class MesonFieldConservedPar: Serializable
 {
 public:
@@ -114,7 +116,7 @@ public:
     // dependency relation
     virtual std::vector<std::string> getInput(void);
     virtual std::vector<std::string> getOutput(void);
-    virtual void parseGammaString(std::vector<Gamma::Algebra> &gammaList);
+    virtual void parseGammaString(std::vector<GammaPair> &gammaList);
     // setup
     virtual void setup(void);
     // execution
@@ -139,7 +141,7 @@ TMesonFieldConserved<FImpl>::TMesonFieldConserved(const std::string name)
 template<typename FImpl>
 std::vector<std::string> TMesonFieldConserved<FImpl>::getInput(void)
 {
-    std::vecotr<std<std::string> in = {par().action, par().A2A1 + "_class", par().A2A2 + "_class"};
+    std::vector<std::string> in = {par().action, par().A2A1 + "_class", par().A2A2 + "_class"};
     if (!par().photon.empty()) in.push_back(par().photon);
     in.push_back(par().A2A1 + "_class");
     in.push_back(par().A2A2 + "_class");
@@ -156,7 +158,7 @@ std::vector<std::string> TMesonFieldConserved<FImpl>::getOutput(void)
 }
 
 template <typename FImpl>
-void TMesonFieldConserved<FImpl>::parseGammaString(std::vector<Gamma::Algebra> &gammaList)
+void TMesonFieldConserved<FImpl>::parseGammaString(std::vector<GammaPair> &gammaList)
 {
     gammaList.clear();
     // Determine gamma matrices to insert at source/sink.
@@ -165,14 +167,18 @@ void TMesonFieldConserved<FImpl>::parseGammaString(std::vector<Gamma::Algebra> &
         // Do all contractions.
         for (unsigned int i = 1; i < Gamma::nGamma; i += 2)
         {
-            gammaList.push_back(((Gamma::Algebra)i));
+            for (unsigned int j = 1; j < Gamma::nGamma; j += 2)
+            {
+                gammaList.push_back(std::make_pair((Gamma::Algebra)i, 
+                                                   (Gamma::Algebra)j));
+            }
         }
     }
     else
     {
         // Parse individual contractions from input string.
-        gammaList = strToVec<Gamma::Algebra>(par().gammas);
-    }
+        gammaList = strToVec<GammaPair>(par().gammas);
+    } 
 }
 
 // setup ///////////////////////////////////////////////////////////////////////
@@ -187,7 +193,7 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envCacheLat(LatticeComplex, SeqmomphName_);
     envTmpLat(LatticeComplex, "coor");
     envTmpLat(LatticeComplex, "latt_compl");
-    envTempLat(PropagatorField, "q");
+    envTmpLat(PropagatorField, "q");
 
     // for A2A
     int nt = env().getDim(Tp);
@@ -225,12 +231,12 @@ void TMesonFieldConserved<FImpl>::execute(void)
     parseGammaString(gammaList);
 
     // Get number of timeslices
-    nt = env().getDim(Tp);
+    int nt = env().getDim(Tp);
 
     // Fill Results with data avalible
 
-    result.gamma_snk = gammaList[0].first
-    result.gamma_src = gammaList[0].second
+    result.gamma_snk = gammaList[0].first;
+    result.gamma_src = gammaList[0].second;
     result.corr_exch.resize(nt);
     result.corr_self.resize(nt);
 
@@ -391,17 +397,17 @@ void TMesonFieldConserved<FImpl>::execute(void)
                     sliceInnerProductVector(MF_x, adj(w1[l]), v1[i], Tp);
                     sliceInnerProductVector(MF_y, adj(w1[j]), v1[k], Tp);
                     sliceInnerProductVector(MF_z1_5d, adj(w1_5d[i]), v1_5d[j], Tp);
-                    sliceInnerProductVector(MF_z2_5d, adj(W1_5d[k]), v1_5d[l], Tp);
+                    sliceInnerProductVector(MF_z2_5d, adj(w1_5d[k]), v1_5d[l], Tp);
                     //sum over 5th dim
-                    MF_z1 = zero;
-                    MF_z2 = zero;
+                    MF_z1 = Zero;
+                    MF_z2 = Zero;
                     for (unsigned int s = 0, s < Ls_, s++)
                     {
                         ExtractSlice(tmp_4d, MF_z1_5d,s,0);
                         MF_z1+=tmp_4d;
                         ExtractSlice(tmp_4d, MF_z2_5d,s,0);
                         MF_z2+=tmp_4d;
-                    }
+                    };
 
                     //perform the contraction.
                     for (unsigned int t = 0; t < nt; ++t)
