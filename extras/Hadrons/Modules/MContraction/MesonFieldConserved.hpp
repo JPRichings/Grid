@@ -33,7 +33,7 @@ directory
 #include <Grid/Hadrons/Global.hpp>
 #include <Grid/Hadrons/Module.hpp>
 #include <Grid/Hadrons/ModuleFactory.hpp>
-#include <Grid/Hadrons/A2AVectors.hpp>
+#include <Grid/Hadrons/AllToAllVectors.hpp>
 
 BEGIN_HADRONS_NAMESPACE
 
