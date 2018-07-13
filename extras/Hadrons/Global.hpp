@@ -43,6 +43,10 @@ See the full license in the file "LICENSE" in the top level distribution directo
 #define DEFAULT_ASCII_PREC 16
 #endif
 
+/* the 'using Grid::operator<<;' statement prevents a very nasty compilation
+ * error with GCC 5 (clang & GCC 6 compile fine without it).
+ */
+
 #define BEGIN_HADRONS_NAMESPACE \
 namespace Grid {\
 using namespace QCD;\
@@ -58,10 +62,6 @@ using Grid::operator>>;
 
 #define END_MODULE_NAMESPACE }
 
-/* the 'using Grid::operator<<;' statement prevents a very nasty compilation
- * error with GCC 5 (clang & GCC 6 compile fine without it).
- */
-
 #ifndef FIMPL
 #define FIMPL WilsonImplR
 #endif
@@ -72,7 +72,7 @@ using Grid::operator>>;
 #define SIMPL ScalarImplCR
 #endif
 #ifndef GIMPL
-#define GIMPL GimplTypesR
+#define GIMPL PeriodicGimplR
 #endif
 
 BEGIN_HADRONS_NAMESPACE
@@ -93,17 +93,15 @@ typedef typename SImpl::Field ScalarField##suffix;\
 typedef typename SImpl::Field PropagatorField##suffix;
 
 #define SOLVER_TYPE_ALIASES(FImpl, suffix)\
-typedef std::function<void(FermionField##suffix &,\
-                      const FermionField##suffix &)> SolverFn##suffix;
+typedef Solver<FImpl> Solver##suffix;
 
 #define SINK_TYPE_ALIASES(suffix)\
 typedef std::function<SlicedPropagator##suffix\
                       (const PropagatorField##suffix &)> SinkFn##suffix;
 
-#define FGS_TYPE_ALIASES(FImpl, suffix)\
+#define FG_TYPE_ALIASES(FImpl, suffix)\
 FERM_TYPE_ALIASES(FImpl, suffix)\
-GAUGE_TYPE_ALIASES(FImpl, suffix)\
-SOLVER_TYPE_ALIASES(FImpl, suffix)
+GAUGE_TYPE_ALIASES(FImpl, suffix)
 
 // logger
 class HadronsLogger: public Logger
@@ -208,6 +206,10 @@ void        makeFileDir(const std::string filename, GridBase *g);
 #define _HADRONS_SCHUR_SOLVE_(conv) SchurRedBlack##conv##Solve
 #define HADRONS_SCHUR_SOLVE(conv) _HADRONS_SCHUR_SOLVE_(conv)
 #define HADRONS_DEFAULT_SCHUR_SOLVE HADRONS_SCHUR_SOLVE(HADRONS_DEFAULT_SCHUR)
+
+// stringify macro
+#define _HADRONS_STR(x) #x
+#define HADRONS_STR(x) _HADRONS_STR(x)
 
 END_HADRONS_NAMESPACE
 

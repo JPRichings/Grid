@@ -54,7 +54,7 @@ template <typename FImpl>
 class TWilson: public Module<WilsonPar>
 {
 public:
-    FGS_TYPE_ALIASES(FImpl,);
+    FG_TYPE_ALIASES(FImpl,);
 public:
     // constructor
     TWilson(const std::string name);
@@ -102,7 +102,7 @@ std::vector<std::string> TWilson<FImpl>::getOutput(void)
 template <typename FImpl>
 void TWilson<FImpl>::setup(void)
 {
-    LOG(Message) << "Setting up TWilson fermion matrix with m= " << par().mass
+    LOG(Message) << "Setting up Wilson fermion matrix with m= " << par().mass
                  << " using gauge field '" << par().gauge << "'" << std::endl;
     LOG(Message) << "Fermion boundary conditions: " << par().boundary
                  << std::endl;

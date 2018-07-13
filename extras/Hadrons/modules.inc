@@ -5,6 +5,7 @@ modules_cc =\
   Modules/MScalar/ChargedProp.cc \
   Modules/MScalar/ScalarVP.cc \
   Modules/MContraction/Baryon.cc \
+  Modules/MContraction/MesonFieldGamma.cc \
   Modules/MContraction/WeakHamiltonianNonEye.cc \
   Modules/MContraction/DiscLoop.cc \
   Modules/MContraction/Gamma3pt.cc \
@@ -18,19 +19,23 @@ modules_cc =\
   Modules/MSource/Point.cc \
   Modules/MSource/SeqGamma.cc \
   Modules/MSource/Wall.cc \
-  Modules/MUtilities/TestSeqConserved.cc \
-  Modules/MUtilities/TestSeqGamma.cc \
   Modules/MFermion/GaugeProp.cc \
   Modules/MFermion/FreeProp.cc \
   Modules/MSink/Point.cc \
   Modules/MSink/Smear.cc \
+  Modules/MSolver/A2AVectors.cc \
   Modules/MSolver/RBPrecCG.cc \
   Modules/MSolver/LocalCoherenceLanczos.cc \
+  Modules/MGauge/StoutSmearing.cc \
   Modules/MGauge/UnitEm.cc \
   Modules/MGauge/Random.cc \
   Modules/MGauge/FundtoHirep.cc \
   Modules/MGauge/StochEm.cc \
   Modules/MGauge/Unit.cc \
+  Modules/MUtilities/TestSeqGamma.cc \
+  Modules/MUtilities/TestSeqConserved.cc \
+  Modules/MAction/MobiusDWF.cc \
+  Modules/MAction/ScaledDWF.cc \
   Modules/MScalarSUN/EMT.cc \
   Modules/MScalarSUN/TrPhi.cc \
   Modules/MScalarSUN/TwoPointNPR.cc \
@@ -62,6 +67,7 @@ modules_hpp =\
   Modules/MContraction/Baryon.hpp \
   Modules/MContraction/MesonFieldConserved.hpp \
   Modules/MContraction/WardIdentity.hpp \
+  Modules/MContraction/MesonFieldGamma.hpp \
   Modules/MContraction/WeakHamiltonian.hpp \
   Modules/MContraction/Gamma3pt.hpp \
   Modules/MContraction/WeakNeutral4ptDisc.hpp \
@@ -80,13 +86,18 @@ modules_hpp =\
   Modules/MFermion/GaugeProp.hpp \
   Modules/MSink/Smear.hpp \
   Modules/MSink/Point.hpp \
+  Modules/MSolver/A2AVectors.hpp \
   Modules/MSolver/LocalCoherenceLanczos.hpp \
   Modules/MSolver/RBPrecCG.hpp \
+  Modules/MGauge/StoutSmearing.hpp \
+  Modules/MGauge/Random.hpp \
   Modules/MGauge/FundtoHirep.hpp \
   Modules/MGauge/Random.hpp \
   Modules/MGauge/StochEm.hpp \
   Modules/MGauge/UnitEm.hpp \
   Modules/MGauge/Unit.hpp \
+  Modules/MAction/MobiusDWF.hpp \
+  Modules/MAction/ScaledDWF.hpp \
   Modules/MScalarSUN/TrMag.hpp \
   Modules/MScalarSUN/TimeMomProbe.hpp \
   Modules/MScalarSUN/StochFreeField.hpp \
