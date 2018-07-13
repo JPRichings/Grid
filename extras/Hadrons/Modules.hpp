@@ -8,15 +8,11 @@
 #include <Grid/Hadrons/Modules/MContraction/MesonFieldConserved.hpp>
 #include <Grid/Hadrons/Modules/MContraction/WardIdentity.hpp>
 #include <Grid/Hadrons/Modules/MContraction/WeakHamiltonian.hpp>
-<<<<<<< HEAD
-=======
 #include <Grid/Hadrons/Modules/MContraction/WeakHamiltonianNonEye.hpp>
 #include <Grid/Hadrons/Modules/MContraction/MesonFieldGamma.hpp>
 #include <Grid/Hadrons/Modules/MContraction/DiscLoop.hpp>
 #include <Grid/Hadrons/Modules/MContraction/WeakNeutral4ptDisc.hpp>
->>>>>>> Fionn/feature/hadrons
 #include <Grid/Hadrons/Modules/MContraction/Gamma3pt.hpp>
-#include <Grid/Hadrons/Modules/MContraction/WeakNeutral4ptDisc.hpp>
 #include <Grid/Hadrons/Modules/MContraction/DiscLoop.hpp>
 #include <Grid/Hadrons/Modules/MContraction/WeakHamiltonianEye.hpp>
 #include <Grid/Hadrons/Modules/MContraction/Meson.hpp>
@@ -35,28 +31,12 @@
 #include <Grid/Hadrons/Modules/MSolver/A2AVectors.hpp>
 #include <Grid/Hadrons/Modules/MSolver/LocalCoherenceLanczos.hpp>
 #include <Grid/Hadrons/Modules/MSolver/RBPrecCG.hpp>
-<<<<<<< HEAD
-=======
 #include <Grid/Hadrons/Modules/MGauge/UnitEm.hpp>
 #include <Grid/Hadrons/Modules/MGauge/StoutSmearing.hpp>
 #include <Grid/Hadrons/Modules/MGauge/Unit.hpp>
 #include <Grid/Hadrons/Modules/MGauge/Random.hpp>
->>>>>>> Fionn/feature/hadrons
 #include <Grid/Hadrons/Modules/MGauge/FundtoHirep.hpp>
-#include <Grid/Hadrons/Modules/MGauge/Random.hpp>
 #include <Grid/Hadrons/Modules/MGauge/StochEm.hpp>
-<<<<<<< HEAD
-#include <Grid/Hadrons/Modules/MGauge/UnitEm.hpp>
-#include <Grid/Hadrons/Modules/MGauge/Unit.hpp>
-=======
-#include <Grid/Hadrons/Modules/MUtilities/TestSeqGamma.hpp>
-#include <Grid/Hadrons/Modules/MUtilities/TestSeqConserved.hpp>
-#include <Grid/Hadrons/Modules/MLoop/NoiseLoop.hpp>
-#include <Grid/Hadrons/Modules/MScalar/FreeProp.hpp>
-#include <Grid/Hadrons/Modules/MScalar/VPCounterTerms.hpp>
-#include <Grid/Hadrons/Modules/MScalar/ScalarVP.hpp>
-#include <Grid/Hadrons/Modules/MScalar/Scalar.hpp>
-#include <Grid/Hadrons/Modules/MScalar/ChargedProp.hpp>
 #include <Grid/Hadrons/Modules/MAction/DWF.hpp>
 #include <Grid/Hadrons/Modules/MAction/MobiusDWF.hpp>
 #include <Grid/Hadrons/Modules/MAction/Wilson.hpp>
@@ -68,7 +48,6 @@
 #include <Grid/Hadrons/Modules/MScalarSUN/ShiftProbe.hpp>
 #include <Grid/Hadrons/Modules/MScalarSUN/Div.hpp>
 #include <Grid/Hadrons/Modules/MScalarSUN/TimeMomProbe.hpp>
->>>>>>> Fionn/feature/hadrons
 #include <Grid/Hadrons/Modules/MScalarSUN/TrMag.hpp>
 #include <Grid/Hadrons/Modules/MScalarSUN/TimeMomProbe.hpp>
 #include <Grid/Hadrons/Modules/MScalarSUN/StochFreeField.hpp>
@@ -82,15 +61,7 @@
 #include <Grid/Hadrons/Modules/MScalarSUN/Div.hpp>
 #include <Grid/Hadrons/Modules/MScalarSUN/ShiftProbe.hpp>
 #include <Grid/Hadrons/Modules/MScalarSUN/TrKinetic.hpp>
-#include <Grid/Hadrons/Modules/MAction/WilsonClover.hpp>
-#include <Grid/Hadrons/Modules/MAction/Wilson.hpp>
-#include <Grid/Hadrons/Modules/MAction/DWF.hpp>
-#include <Grid/Hadrons/Modules/MAction/ZMobiusDWF.hpp>
 #include <Grid/Hadrons/Modules/MIO/LoadNersc.hpp>
 #include <Grid/Hadrons/Modules/MIO/LoadCoarseEigenPack.hpp>
-<<<<<<< HEAD
-#include <Grid/Hadrons/Modules/MIO/LoadBinary.hpp>
 #include <Grid/Hadrons/Modules/MIO/LoadEigenPack.hpp>
-=======
 #include <Grid/Hadrons/Modules/MIO/LoadBinary.hpp>
->>>>>>> Fionn/feature/hadrons

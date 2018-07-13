@@ -156,7 +156,7 @@ std::vector<std::string> TMesonFieldConserved<FImpl>::getOutput(void)
 }
 
 template <typename FImpl>
-void TMesonFieldGamma<FImpl>::parseGammaString(std::vector<Gamma::Algebra> &gammaList)
+void TMesonFieldConserved<FImpl>::parseGammaString(std::vector<Gamma::Algebra> &gammaList)
 {
     gammaList.clear();
     // Determine gamma matrices to insert at source/sink.
