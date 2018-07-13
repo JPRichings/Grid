@@ -67,8 +67,8 @@ class MesonFieldConservedPar: Serializable
 {
 public:
     GRID_SERIALIZABLE_CLASS_MEMBERS(MesonFieldConservedPar,
-                                    int, Nl,
-                                    int, N,
+                                    unsigned int, Nl,
+                                    unsigned int, N,
                                     std::string, A2A1,
                                     std::string, A2A2,
                                     std::string, gammas,
@@ -90,7 +90,7 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
         FERM_TYPE_ALIASES(FImpl, );
         SOLVER_TYPE_ALIASES(FImpl, );
 
-        typedef A2AModesSchurDiagTwo<typename FImpl::FermionField, FMat> A2ABase;
+        typedef A2AModesSchurDiagTwo<typename FImpl::FermionField, FMat, Solver> A2ABase;
         //typedef A2AVectorsReturn<typename FImpl::FermionField, FMat> A2AReturn;
 
         class Result : Serializable
@@ -114,7 +114,7 @@ public:
     // dependency relation
     virtual std::vector<std::string> getInput(void);
     virtual std::vector<std::string> getOutput(void);
-    virtual void parseGammaString(std::vector<GammaPair> & gammaList);
+    virtual void parseGammaString(std::vector<Gamma::Algebra> &gammaList);
     // setup
     virtual void setup(void);
     // execution
@@ -156,11 +156,23 @@ std::vector<std::string> TMesonFieldConserved<FImpl>::getOutput(void)
 }
 
 template <typename FImpl>
-void TMesonFieldConserved<FImpl>::parseGammaString(std::vector<GammaPair> & gammaList)
+void TMesonFieldGamma<FImpl>::parseGammaString(std::vector<Gamma::Algebra> &gammaList)
 {
     gammaList.clear();
-    //Parse individual contractions from input string.
-    gammaList = strToVec<GammaPair>(Par().gammas);
+    // Determine gamma matrices to insert at source/sink.
+    if (par().gammas.compare("all") == 0)
+    {
+        // Do all contractions.
+        for (unsigned int i = 1; i < Gamma::nGamma; i += 2)
+        {
+            gammaList.push_back(((Gamma::Algebra)i));
+        }
+    }
+    else
+    {
+        // Parse individual contractions from input string.
+        gammaList = strToVec<Gamma::Algebra>(par().gammas);
+    }
 }
 
 // setup ///////////////////////////////////////////////////////////////////////
