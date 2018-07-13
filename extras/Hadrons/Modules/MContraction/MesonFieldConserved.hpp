@@ -127,7 +127,7 @@ private:
 };
 
 MODULE_REGISTER(MesonFieldConserved, ARG(TMesonFieldConserved<FIMPL>), MContraction);
-MODULE_REGISTER(ZMesonFieldConserved, ARG(TMesonFieldConserved<ZFIMPL>), MContraction);
+//MODULE_REGISTER(ZMesonFieldConserved, ARG(TMesonFieldConserved<ZFIMPL>), MContraction);
 /******************************************************************************
  *                  MesonFieldConserved  implementation                       *
  ******************************************************************************/
@@ -355,11 +355,11 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
             // new code
             // Convert the fermion field of the all to all vector into a propagator
-            FermToProp(v1_5d[i], q, 0, 0); // need to check that v1 is called correctly. probably need to loop over number of modes
+            FermToProp<FImpl>(v1_5d[i], q, 0, 0);
             // Run the Multiplication
             mat.SeqConservedCurrent(q, src_tmp, par().current, mu, par().tA, par().tB, latt_compl);
             // Convert back into a fermion
-            PropToFerm(src_tmp_ferm, src_tmp, 0, 0);
+            PropToFerm<FImpl>(src_tmp_ferm, src_tmp, 0, 0);
         src += src_tmp_ferm;
         }
         v1_5d[i] = src;
@@ -403,10 +403,10 @@ void TMesonFieldConserved<FImpl>::execute(void)
                     MF_z2 = Zero;
                     for (unsigned int s = 0, s < Ls_, s++)
                     {
-                        ExtractSlice(tmp_4d, MF_z1_5d,s,0);
-                        MF_z1+=tmp_4d;
-                        ExtractSlice(tmp_4d, MF_z2_5d,s,0);
-                        MF_z2+=tmp_4d;
+                        ExtractSlice(tmp_4d, MF_z1_5d, s, 0); // bug
+                        MF_z1 += tmp_4d; // bug
+                        ExtractSlice(tmp_4d, MF_z2_5d, s, 0); // bug
+                        MF_z2 += tmp_4d; // bug
                     };
 
                     //perform the contraction.
@@ -416,7 +416,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
                         {   
                             ty = (t + tx) % nt;
 
-                            for (unsigned int tz1 = 0; tz1 < nt; tz1++)
+                            for (unsigned int tz1 = 0; tz1< nt; tz1++)
                             {
                                 for (unsigned int tz2 = 0; tz2 < nt; tz2++)
                                 {
