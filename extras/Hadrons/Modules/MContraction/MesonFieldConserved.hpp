@@ -88,9 +88,10 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
 {
     public:
         FERM_TYPE_ALIASES(FImpl, );
+        SOLVER_TYPE_ALIASES(FImpl, );
 
         typedef A2AModesSchurDiagTwo<typename FImpl::FermionField, FMat> A2ABase;
-        typedef A2AVectorsReturn<typename FImpl::FermionField, FMat> A2AReturn;
+        //typedef A2AVectorsReturn<typename FImpl::FermionField, FMat> A2AReturn;
 
         class Result : Serializable
         {
@@ -98,7 +99,8 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
                 GRID_SERIALIZABLE_CLASS_MEMBERS(Result,
                                                 Gamma::Algebra, gamma_snk,
                                                 Gamma::Algebra, gamma_src,
-                                                std::vector<Complex>, corr);
+                                                std::vector<Complex>, corr_exch,
+                                                std::vector<Complex>, corr_self);
         };
 
 
@@ -137,10 +139,10 @@ TMesonFieldConserved<FIpml>::TMesonFieldConserved(const std::string name)
 template<type FImpl>
 std::vector<std::string> TMesonFieldConserved<FImpl>::getInput(void)
 {
-    std::vecotr<std<std::string> in = {par().action, par().A2A1, par().A2A2};
+    std::vecotr<std<std::string> in = {par().action, par().A2A1 + "_class", par().A2A2 + "_class"};
     if (!par().photon.empty()) in.push_back(par().photon);
-    in.push_back(par().A2A1 + "_ret");
-    in.push_back(par().A2A2 + "_ret");
+    //in.push_back(par().A2A1 + "_ret");
+    //in.push_back(par().A2A2 + "_ret");
 
     return in;
 }
@@ -176,9 +178,10 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envTempLat(PropagatorField, "q"); // delete once template
 
     // for A2A
-
     int nt = env().getDim(Tp);
     int N = par().N;
+    int Ls_ = env().getObjectLs(par().A2A1 + "_class")
+
     envTmp(std::vector<FermionField>, "w1", 1, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<FermionField>, "v1", 1, N, FermionField(env().getGrid(1)));
     //envTmp(std::vector<FermionField>, "v1_con", Ls_, N, FermionField(env().getGrid(1)));
@@ -191,7 +194,11 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z1", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
-    envTmp(std::vector<ComplexD>, "tmp", 1, nt);
+    envTmp(std::vector<ComplexD>, "MF_z1_5d", Ls_, nt);
+    envTmp(std::vector<ComplexD>, "MF_z2_5d", Ls_, nt);
+    envTmp(std::vector<ComplexD>, "tmp_4d", 1, nt);
+    envTmp(std::vector<ComplexD>, "tmp_exch", 1,nt);
+    envTmp(std::vector<ComplexD>, "tmp_self", 1,nt);
 }
 // execution ///////////////////////////////////////////////////////////////////
 template <typename FImpl>
@@ -216,53 +223,37 @@ void TMesonFieldConserved<FImpl>::execute(void)
 
     result.gamma_snk = gammaList[0].first
     result.gamma_src = gammaList[0].second
-    result.corr.resize(nt);
-    //result.MFx.resize(nt);
-    //result.MFz1.resize(nt);
-    //result.MFy.resize(nt);
+    result.corr_exch.resize(nt);
+    result.corr_self.resize(nt);
 
     int Nl = par().Nl;
     int N = par().N;
 
     LOG(Message) << "N for A2A cont: " << N << std::endl;
 
-    // get temporary volumes
-    envGetTmp(std::vector<ComplexD>, MF_x);
-    envGetTmp(std::vector<ComplexD>, MF_y);
-    envGetTmp(std::vector<ComplexD>, MF_z1);
-    envGetTmp(std::vector<ComplexD>, MF_z2);
-    envGetTmp(std::vector<ComplexD>, tmp);
-
     // Check the the initialization of tmp.
-    for (unsigned int t = 0; t < nt; ++t)
-    {
-        tmp[t] = TensorRemove(MF_x[t] * MF_z1[t] * MF_x[t] * MF_z1[t] * 0.0);
-    }
+    //for (unsigned int t = 0; t < nt; ++t)
+    //{
+    //    tmp[t] = TensorRemove(MF_x[t] * MF_z1[t] * MF_x[t] * MF_z1[t] * 0.0);
+    //}
 
     Gamma gSnk(gammaList[0].first);
     Gamma gSrc(gammaList[0].second);
 
 
     // Get a pointer to the derived tyoe that returns the all to all vectors
-    auto &a2a1_fn = envGet(A2ABase, par().A2A1 + "_ret");
-    auto &a2a2_fn = envGet(A2ABase, par().A2A1 + "_ret");
-    
-    // Get temp fermion fields 
-    envGetTmp(std::vector<FermionField>, w1);
-    envGetTmp(std::vector<FermionField>, v1);
-    //envGetTmp(std::vector<FermionField>, v1_con);
-    envGetTmp(std::vector<FermionField>, w1_5d);
-    envGetTmp(std::vector<FermionField>, v1_5d);
+    auto &a2a1 = envGet(A2ABase, par().A2A1 + "_class");
+    //auto &a2a2 = envGet(A2ABase, par().A2A2 + "_class");
 
     // Get v and w vectors
-    LOG(Message) << "Finding v and w vectors for N =  " << N << std::endl;
+    /*LOG(Message) << "Finding v and w vectors for N =  " << N << std::endl;
     for (int i = 0; i < N; i++)
     {
-        a2a1_fn.return_v(i, v1_5d[i], v1[i]);
-        a2a1_fn.return_w(i, w1_5d[i], w1[i]); // remove this to lower down
+        a2a1.return_v(i, v1_5d[i], v1[i]);
+        a2a1.return_w(i, w1_5d[i], w1[i]); // move this to lower down
     }
     LOG(Message) << "Found v and w vectors for N =  " << N << std::endl;
-
+    */
 
     // sequential converved //
 
@@ -315,9 +306,21 @@ void TMesonFieldConserved<FImpl>::execute(void)
 	 LOG(Message) << "Inserting the stochastic photon field " << par().photon << std::endl;
     }
 
+    // Get temp fermion fields 
+    envGetTmp(std::vector<FermionField>, w1);
+    envGetTmp(std::vector<FermionField>, v1);
+    envGetTmp(std::vector<FermionField>, w1_5d);
+    envGetTmp(std::vector<FermionField>, v1_5d);
+
 
     for(int i = 0; i < N; i++)
-    {
+    {   
+        // Get v and w vectors
+        a2a1.return_v(i, v1_5d[i], v1[i]);
+        a2a1.return_w(i, w1_5d[i], w1[i]);
+
+        LOG(Message) << "Finding v and w vectors for i =  " << i << std::endl;
+
         src = zero;
 
         for(unsigned int mu=par().mu_min;mu<=par().mu_max;mu++)
@@ -357,6 +360,17 @@ void TMesonFieldConserved<FImpl>::execute(void)
     // Define ty
     int ty;
 
+    // get temporary volumes
+    envGetTmp(std::vector<ComplexD>, MF_x);
+    envGetTmp(std::vector<ComplexD>, MF_y);
+    envGetTmp(std::vector<ComplexD>, MF_z1);
+    envGetTmp(std::vector<ComplexD>, MF_z2);
+    envGetTmp(std::vector<ComplexD>, MF_z1_5d);
+    envGetTmp(std::vector<ComplexD>, MF_z2_5d);
+    envGetTmp(std::vector<ComplexD>, tmp_4d);
+    envGetTmp(std::vector<ComplexD>, tmp_self);
+    envGetTmp(std::vector<ComplexD>, tmp_exch);
+
     // start contraction loop
     for(int i = 0; i < N; i++)
     {
@@ -368,8 +382,8 @@ void TMesonFieldConserved<FImpl>::execute(void)
                 {
                     sliceInnerProductVector(MF_x, adj(w1[l]), v1[i], Tp);
                     sliceInnerProductVector(MF_y, adj(w1[j]), v1[k], Tp);
-                    sliceInnerProductVector(MF_z1_5d, adj(w1_5d[i]), v1_5d[j], Tp); // MF_z1_5d define
-                    sliceInnerProductVector(MF_z2_5d, adj(W1_5d[k]), v1_5d[l], Tp); // MF_z2_5d define
+                    sliceInnerProductVector(MF_z1_5d, adj(w1_5d[i]), v1_5d[j], Tp);
+                    sliceInnerProductVector(MF_z2_5d, adj(W1_5d[k]), v1_5d[l], Tp);
                     //sum over 5th dim
                     MF_z1 = zero;
                     MF_z2 = zero;
@@ -417,7 +431,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
         result.corr_exch[t] = NTinv * tmp_exch[t];
         result.corr_self[t] = NTinv * tmp_self[t];
     }
-    saveResult(par().output, "mesonQEDexch", result);
+    saveResult(par().output, "mesonQED", result);
 
 }
 END_MODULE_NAMESPACE
