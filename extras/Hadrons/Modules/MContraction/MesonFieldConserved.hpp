@@ -75,8 +75,8 @@ public:
                                     std::string, A2A2,
                                     std::string, gammas,
                                     std::string, action,
-                                    unsigned int tA,
-                                    unsigned int tB,
+                                    unsigned int, tA,
+                                    unsigned int, tB,
                                     Current, curr_type,
                                     unsigned int, mu_min,
                                     unsigned int, mu_max,
@@ -354,9 +354,9 @@ void TMesonFieldConserved<FImpl>::execute(void)
             //
             // new code
             // Convert the fermion field of the all to all vector into a propagator
-            FermToProp<FImpl>(v1_5d[i], q, 0, 0);
+            FermToProp<FImpl>(v1_5d[i], q, 0, 0); //bug in ferm to prop using v1_5d???
             // Run the Multiplication
-            mat.SeqConservedCurrent(q, src_tmp, par().current, mu, par().tA, par().tB, latt_compl);
+            mat.SeqConservedCurrent(q, src_tmp, par().curr_type, mu, par().tA, par().tB, latt_compl);
             // Convert back into a fermion
             PropToFerm<FImpl>(src_tmp_ferm, src_tmp, 0, 0);
         src += src_tmp_ferm;
@@ -391,6 +391,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
         {
             for (unsigned int k = 0; k < N; k++)
             {
+            
                 for (unsigned int l = 0; l < N; l++)
                 {
                     sliceInnerProductVector(MF_x, adj(w1[l]), v1[i], Tp);
@@ -402,9 +403,9 @@ void TMesonFieldConserved<FImpl>::execute(void)
                     MF_z2 = zero; // bug
                     for (unsigned int s = 0; s < Ls_; s++)
                     {
-                        ExtractSlice(tmp_4d; MF_z1_5d; s; 0); // bug
+                        ExtractSlice(tmp_4d, MF_z1_5d, s, 0); // bug
                         MF_z1 += tmp_4d; // bug
-                        ExtractSlice(tmp_4d; MF_z2_5d; s; 0); // bug
+                        ExtractSlice(tmp_4d, MF_z2_5d, s, 0); // bug
                         MF_z2 += tmp_4d; // bug
                     };
 
