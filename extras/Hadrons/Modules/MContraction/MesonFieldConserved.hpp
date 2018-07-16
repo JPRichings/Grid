@@ -405,9 +405,9 @@ void TMesonFieldConserved<FImpl>::execute(void)
                     for (unsigned int s = 0; s < Ls_; s++)
                     {
                         ExtractSlice(tmp_4d, MF_z1_5d, s, 0); // bug
-                        MF_z1 += tmp_4d; // bug
+                        MF_z1 = MF_z1 + tmp_4d; // bug
                         ExtractSlice(tmp_4d, MF_z2_5d, s, 0); // bug
-                        MF_z2 += tmp_4d; // bug
+                        MF_z2 = MF_z2 + tmp_4d; // bug
                     };
 
                     //perform the contraction.
