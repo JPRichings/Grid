@@ -400,8 +400,8 @@ void TMesonFieldConserved<FImpl>::execute(void)
                     sliceInnerProductVector(MF_z1_5d, adj(w1_5d[i]), v1_5d[j], Tp);
                     sliceInnerProductVector(MF_z2_5d, adj(w1_5d[k]), v1_5d[l], Tp);
                     //sum over 5th dim
-                    MF_z1 = zero; // bug
-                    MF_z2 = zero; // bug
+                    MF_z1 = MF_z1 * 0.0;
+                    MF_z2 = MF_z2 * 0.0;
                     for (unsigned int s = 0; s < Ls_; s++)
                     {
                         ExtractSlice(tmp_4d, MF_z1_5d, s, 0); // bug
