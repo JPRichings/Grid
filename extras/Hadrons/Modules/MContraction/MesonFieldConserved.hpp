@@ -198,10 +198,14 @@ void TMesonFieldConserved<FImpl>::setup(void)
     int nt = env().getDim(Tp);
     int N = par().N;
     //int Ls_ = env().getObjectLs(par().A2A1 + "_class");
-    envTmpLat(std::vector<FermionField>, "w1", 1);
-    envTmpLat(std::vector<FermionField>, "v1", 1);
-    envTmpLat(std::vector<FermionField>, "w1_5d", Ls_);
-    envTmpLat(std::vector<FermionField>, "v1_5d", Ls_);
+    //envTmp(std::vector<FermionField>, "w1", 1);
+    //envTmp(std::vector<FermionField>, "v1", 1);
+    //envTmpLat(std::vector<FermionField>, "w1_5d", Ls_);
+    //envTmpLat(std::vector<FermionField>, "v1_5d", Ls_);
+    envTmp(std::vector<FermionField>, "v1", 1, N, FermionField(env().getGrid(1)));
+    envTmp(std::vector<FermionField>, "w1", 1, N, FermionField(env().getGrid(1)));
+    envTmp(std::vector<FermionField>, "v1_5d", Ls_, N, FermionField(env().getGrid(1)));
+    envTmp(std::vector<FermionField>, "w1_5d", Ls_, N, FermionField(env().getGrid(1)));
     envTmp(std::vector<ComplexD>, "MF_x", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_y", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z1", 1, nt);
