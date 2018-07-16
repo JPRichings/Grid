@@ -68,7 +68,7 @@ typedef std::pair<Gamma::Algebra, Gamma::Algebra> GammaPair;
 class MesonFieldConservedPar: Serializable
 {
 public:
-    GRID_SERIALIZABLE_CLASS_MEMBERS(MesonFieldConservedPar,
+    GRID_SERIALIZABLE_CLASS_MEMBERS(MesonFieldConservedPar, // bug missing a ;
                                     unsigned int, Nl,
                                     unsigned int, N,
                                     std::string, A2A1,
@@ -104,7 +104,6 @@ class TMesonFieldConserved: public Module<MesonFieldConservedPar>
                                                 std::vector<Complex>, corr_exch,
                                                 std::vector<Complex>, corr_self);
         };
-
 
 public:
     typedef PhotonR::GaugeField     EmField;
@@ -315,7 +314,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
     }
     LOG(Message) << "Inserting momentum " << strToVec<Real>(par().mom) << std::endl;
 
-    if (!par().photon.empty())    	
+    if (!par().photon.empty())
     {
 	 LOG(Message) << "Inserting the stochastic photon field " << par().photon << std::endl;
     }
@@ -352,7 +351,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
             // old code
             // mat.SeqConservedCurrent(q, src_tmp, par().curr_type, mu, //seqConservedCurrent is called from wilsonFermion5D        
             //                     par().tA, par().tB, latt_compl);
-
+            //
             // new code
             // Convert the fermion field of the all to all vector into a propagator
             FermToProp<FImpl>(v1_5d[i], q, 0, 0);
@@ -399,13 +398,13 @@ void TMesonFieldConserved<FImpl>::execute(void)
                     sliceInnerProductVector(MF_z1_5d, adj(w1_5d[i]), v1_5d[j], Tp);
                     sliceInnerProductVector(MF_z2_5d, adj(w1_5d[k]), v1_5d[l], Tp);
                     //sum over 5th dim
-                    MF_z1 = Zero;
-                    MF_z2 = Zero;
-                    for (unsigned int s = 0, s < Ls_, s++)
+                    MF_z1 = zero; // bug
+                    MF_z2 = zero; // bug
+                    for (unsigned int s = 0; s < Ls_; s++)
                     {
-                        ExtractSlice(tmp_4d, MF_z1_5d, s, 0); // bug
+                        ExtractSlice(tmp_4d; MF_z1_5d; s; 0); // bug
                         MF_z1 += tmp_4d; // bug
-                        ExtractSlice(tmp_4d, MF_z2_5d, s, 0); // bug
+                        ExtractSlice(tmp_4d; MF_z2_5d; s; 0); // bug
                         MF_z2 += tmp_4d; // bug
                     };
 
