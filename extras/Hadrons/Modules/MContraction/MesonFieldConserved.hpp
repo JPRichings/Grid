@@ -208,9 +208,9 @@ void TMesonFieldConserved<FImpl>::setup(void)
     envTmp(std::vector<ComplexD>, "MF_z2", 1, nt);
     envTmp(std::vector<ComplexD>, "MF_z1_5d", Ls_, nt);
     envTmp(std::vector<ComplexD>, "MF_z2_5d", Ls_, nt);
-    envTmpLat(std::vector<ComplexD>, "tmp_4d", 1, nt);
-    envTmpLat(std::vector<ComplexD>, "tmp_exch", 1,nt);
-    envTmpLat(std::vector<ComplexD>, "tmp_self", 1,nt);
+    envTmp(std::vector<ComplexD>, "tmp_4d", 1, nt);
+    envTmp(std::vector<ComplexD>, "tmp_exch", 1, nt);
+    envTmp(std::vector<ComplexD>, "tmp_self", 1, nt);
 }
 
 // execution ///////////////////////////////////////////////////////////////////
@@ -355,7 +355,7 @@ void TMesonFieldConserved<FImpl>::execute(void)
             //
             // new code
             // Convert the fermion field of the all to all vector into a propagator
-            FermToProp<FImpl>(v1_5d[i], q, 0, 0); //bug in ferm to prop using v1_5d???
+            FermToProp<FImpl>(q, v1_5d[i], 0, 0); //bug in ferm to prop using v1_5d???
             // Run the Multiplication
             mat.SeqConservedCurrent(q, src_tmp, par().curr_type, mu, par().tA, par().tB, latt_compl);
             // Convert back into a fermion
