@@ -58,6 +58,7 @@ public:
 public:
     std::vector<RealD> eval;
     std::vector<F>     evec;
+    std::vector<F>     evectmp;
     PackRecord         record;
 public:
     EigenPack(void)          = default;
@@ -143,15 +144,15 @@ protected:
             {
                 // convert the eigen values to single precision
                 
-                float tmp = (float) eval[k]);
-                eval[k] = (double) tmp;
+                RealF tmp = (RealF) eval[k]);
+                eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
-                localConvertJamesR(evec[k],evec[k]);
+                localConvertJamesR(evec[k],evectmp[k]);
+                LOG(Message) << "double" << norm2(evec[k]) << std:endl;
+                LOG(Message) << "single" << norm2(evectmp[k]) << std:endl;
+                LOG(Message) << "diff" << norm2(evec[k]) << std:endl;
+                evec[k] = evectmp[k];
 
-            }
-            else
-            {
-                
             }
         }
         binReader.close();

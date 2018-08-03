@@ -382,17 +382,27 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     assert(ig->_ldimensions[d] == og->_ldimensions[d]);
     assert(ig->lSites() == og->lSites());
   }
-
-  parallel_for(int idx=0;idx<ig->lSites();idx++){
+  ComplexD bufD;
+  ComplexF bufF;
+  parallel_for(int idx=0;idx<ig->lSites();idx++)
+  {
     sobj s;
     ssobj ss;
 
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
     peekLocalSite(s,in,lcoor);
-    float x = (float) s;
-    ss = (double) x;
+    for (unsigned int d = 0; d < Ns ; ++d)
+    {
+    for (unsigned int c = 0; c < Nc ; ++c)
+    {
+    bufD = peekColour(peekSpin(s,d),c);
+    bufF = (ComplexF) bufD;
+    bufD = (ComplexD) bufF;
     //ss=s;
+    ss = pokeColour(pokeSpin(buf,d),c);
+    }
+    }
     pokeLocalSite(ss,out,lcoor);
   }
 }
