@@ -362,6 +362,40 @@ void localConvert(const Lattice<vobj> &in,Lattice<vvobj> &out)
     pokeLocalSite(ss,out,lcoor);
   }
 }
+//dirty hack to convert eigen packs from double to single precision.
+template<class vobj,class vvobj>
+void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
+{
+  typedef typename vobj::scalar_object sobj;
+  typedef typename vvobj::scalar_object ssobj;
+
+  GridBase *ig = in._grid;
+  GridBase *og = out._grid;
+
+  int ni = ig->_ndimension;
+  int no = og->_ndimension;
+
+  assert(ni == no);
+
+  for(int d=0;d<no;d++){
+    assert(ig->_processors[d]  == og->_processors[d]);
+    assert(ig->_ldimensions[d] == og->_ldimensions[d]);
+    assert(ig->lSites() == og->lSites());
+  }
+
+  parallel_for(int idx=0;idx<ig->lSites();idx++){
+    sobj s;
+    ssobj ss;
+
+    std::vector<int> lcoor(ni);
+    ig->LocalIndexToLocalCoor(idx,lcoor);
+    peekLocalSite(s,in,lcoor);
+    float x = (float) s;
+    ss = (double) x;
+    //ss=s;
+    pokeLocalSite(ss,out,lcoor);
+  }
+}
 
 
 template<class vobj>

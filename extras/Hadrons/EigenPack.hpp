@@ -139,6 +139,20 @@ protected:
                               + ") in file '" + filename + "'");
             }
             eval[k] = vecRecord.eval;
+            if(false)
+            {
+                // convert the eigen values to single precision
+                
+                float tmp = (float) eval[k]);
+                eval[k] = (double) tmp;
+                // convert the eigen vectors to single precision
+                localConvertJamesR(evec[k],evec[k]);
+
+            }
+            else
+            {
+                
+            }
         }
         binReader.close();
     }
