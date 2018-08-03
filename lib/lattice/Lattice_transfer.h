@@ -396,11 +396,12 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     {
     for (unsigned int c = 0; c < Nc ; ++c)
     {
+    //should this be a propagator? error thrown on compile is number of arguments to peek and poke colour and spin too few
     bufD = peekColour(peekSpin(s,d),c);
     bufF = (ComplexF) bufD;
     bufD = (ComplexD) bufF;
     //ss=s;
-    ss = pokeColour(pokeSpin(buf,d),c);
+    ss = pokeColour(pokeSpin(bufD,d),c);
     }
     }
     pokeLocalSite(ss,out,lcoor);
