@@ -388,26 +388,30 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
   {
     sobj s;
     ssobj ss;
+    //int Nc = 3;
+    //int Ns = 4;
 
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
     peekLocalSite(s,in,lcoor);
-    for (unsigned int d = 0; d < Ns ; ++d)
+    for (unsigned int d = 0; d < QCD::Ns ; ++d)
     {
-    for (unsigned int c = 0; c < Nc ; ++c)
-    {
-    //should this be a propagator? error thrown on compile is number of arguments to peek and poke colour and spin too few
-    bufD = peekColour(peekSpin(s,d),c);
-    bufF = (ComplexF) bufD;
-    bufD = (ComplexD) bufF;
-    //ss=s;
-    ss = pokeColour(pokeSpin(bufD,d),c);
-    }
+      for (unsigned int c = 0; c < QCD::Nc ; ++c)
+      {
+      //should this be a propagator? error thrown on compile is number of arguments to peek and poke colour and spin too few
+      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
+      bufF = (ComplexF) bufD;
+      bufD = (ComplexD) bufF;
+      //ss=s;
+      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
+      }
     }
     pokeLocalSite(ss,out,lcoor);
   }
 }
-
+// poke and peek spin and color undefined
+// Ns and Nc undefined
+//F=Grid::Lattice<Grid::QCD::vSpinColourVector>
 
 template<class vobj>
 void InsertSlice(const Lattice<vobj> &lowDim,Lattice<vobj> & higherDim,int slice, int orthog)
