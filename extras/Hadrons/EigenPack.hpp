@@ -176,6 +176,20 @@ protected:
                           + ") in file '" + filename + "'");
         }
         eval = vecRecord.eval;
+        if(true)
+        {
+            // convert the eigen values to single precision
+            //RealF tmp = (RealF) eval[k];
+            //eval[k] = (RealD) tmp;
+            // convert the eigen vectors to single precision
+            localConvertJamesR(evec,evectmp);
+            LOG(Message) << "double" << norm2(evec) << std::endl;
+            LOG(Message) << "single" << norm2(evectmp) << std::endl;
+            //evec[k] = evec[k] - evectmp[k];
+            //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
+            //evec[k] = evectmp[k];
+
+        }
         binReader.close();
     }
 
