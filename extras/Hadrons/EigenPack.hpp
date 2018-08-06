@@ -140,7 +140,7 @@ protected:
                               + ") in file '" + filename + "'");
             }
             eval[k] = vecRecord.eval;
-            if(false)
+            if(true)
             {
                 // convert the eigen values to single precision
                 //RealF tmp = (RealF) eval[k];
