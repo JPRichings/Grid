@@ -396,17 +396,18 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
     peekLocalSite(s,in,lcoor);
-    for (unsigned int d = 0; d < QCD::Ns ; ++d)
-    {
-      for (unsigned int c = 0; c < QCD::Nc ; ++c)
-      {
-      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
-      bufF = (ComplexF) bufD;
-      bufD = (ComplexD) bufF;
+    LOG(Message) << typeid(s).name() << std::endl;
+//    for (unsigned int d = 0; d < QCD::Ns ; ++d)
+//  {
+//     for (unsigned int c = 0; c < QCD::Nc ; ++c)
+//      {
+//      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
+//      bufF = (ComplexF) bufD;
+//      bufD = (ComplexD) bufF;
       //ss=s;
-      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
-      }
-    }
+//      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
+//      }
+//    }
     pokeLocalSite(ss,out,lcoor);
   }
 }
