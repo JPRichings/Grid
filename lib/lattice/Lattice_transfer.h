@@ -28,6 +28,8 @@ Author: Peter Boyle <paboyle@ph.ed.ac.uk>
 #ifndef GRID_LATTICE_TRANSFER_H
 #define GRID_LATTICE_TRANSFER_H
 
+#include <Grid/qcd/QCD.h>
+
 namespace Grid {
 
 inline void subdivides(GridBase *coarse,GridBase *fine)
@@ -394,16 +396,15 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
     peekLocalSite(s,in,lcoor);
-    for (unsigned int d = 0; d < QCD::Ns ; ++d)
+    for (unsigned int d = 0; d < Grid::QCD::Ns ; ++d)
     {
-      for (unsigned int c = 0; c < QCD::Nc ; ++c)
+      for (unsigned int c = 0; c < Grid::QCD::Nc ; ++c)
       {
-      //should this be a propagator? error thrown on compile is number of arguments to peek and poke colour and spin too few
-      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
+      bufD = Grid::QCD::peekColour(Grid::QCD::peekSpin(s,d),c);
       bufF = (ComplexF) bufD;
       bufD = (ComplexD) bufF;
       //ss=s;
-      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
+      ss = Grid::QCD::pokeColour(Grid::QCD::pokeSpin(bufD,d),c);
       }
     }
     pokeLocalSite(ss,out,lcoor);
