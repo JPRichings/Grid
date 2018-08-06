@@ -143,15 +143,15 @@ protected:
             if(false)
             {
                 // convert the eigen values to single precision
-                RealF tmp = (RealF) eval[k];
-                eval[k] = (RealD) tmp;
+                //RealF tmp = (RealF) eval[k];
+                //eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
                 localConvertJamesR(evec[k],evectmp[k]);
                 LOG(Message) << "double" << norm2(evec[k]) << std::endl;
                 LOG(Message) << "single" << norm2(evectmp[k]) << std::endl;
                 //evec[k] = evec[k] - evectmp[k];
                 //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
-                evec[k] = evectmp[k];
+                //evec[k] = evectmp[k];
 
             }
         }
