@@ -384,8 +384,8 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     assert(ig->_ldimensions[d] == og->_ldimensions[d]);
     assert(ig->lSites() == og->lSites());
   }
-  ComplexD bufD;
-  ComplexF bufF;
+  //ComplexD bufD;
+  //ComplexF bufF;
   parallel_for(int idx=0;idx<ig->lSites();idx++)
   {
     sobj s;
@@ -396,7 +396,7 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
     peekLocalSite(s,in,lcoor);
-    std::cout << GridLogMessage << "Hi World" << std::endl;
+    std::cout << GridLogMessage << "HiWorld" << std::endl;
   // typeid(s).name()
 //    for (unsigned int d = 0; d < QCD::Ns ; ++d)
 //  {
@@ -405,11 +405,13 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
 //      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
 //      bufF = (ComplexF) bufD;
 //      bufD = (ComplexD) bufF;
-      //ss=s;
+      ss=s;
 //      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
 //      }
 //    }
+    std::cout << GridLogMessage << "HiWorld2" << std::endl;
     pokeLocalSite(ss,out,lcoor);
+    std::cout << GridLogMessage << "HiWorld3" << std::endl;
   }
 }
 // poke and peek spin and color undefined
