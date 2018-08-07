@@ -192,7 +192,7 @@ protected:
             //eval[k] = (RealD) tmp;
             // convert the eigen vectors to single precision
             //LOG(Message) << "Andreas" << std::endl; //typeid(evec).name() << ":" << typeid(evectmp[0]).name() << std::endl;
-            //localConvertJamesR(&evec, evectmp[0]);
+            localConvertJPR(evec, evectmp[0]);
             //LOG(Message) << "Chris" << std::endl;
             //LOG(Message) << "double" << norm2(evec) << std::endl;
             //LOG(Message) << "single" << norm2(evectmp[0]) << std::endl;
