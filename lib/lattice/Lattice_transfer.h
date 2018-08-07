@@ -396,7 +396,8 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
     peekLocalSite(s,in,lcoor);
-    std::cout << GridLogMessage << typeid(s).name() << std::endl;
+    std::cout << GridLogMessage << "Hi World" << std::endl;
+  // typeid(s).name()
 //    for (unsigned int d = 0; d < QCD::Ns ; ++d)
 //  {
 //     for (unsigned int c = 0; c < QCD::Nc ; ++c)
