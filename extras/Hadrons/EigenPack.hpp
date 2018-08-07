@@ -126,7 +126,7 @@ protected:
                    const std::string filename, const unsigned int size)
     {
         ScidacReader    binReader;
-        LatticeFermionF evecbuf;
+        //LatticeFermionF evecbuf;
 
         binReader.open(filename);
         binReader.skipPastObjectRecord(SCIDAC_FILE_XML);
@@ -151,11 +151,11 @@ protected:
                 // convert the eigen vectors to single precision
                 //localConvertJamesR(evec[k],evectmp[k]);
                 LOG(Message) << "beforeCast"<< std::endl;
-                evecbuf = (LatticeFermionF) evec[k];
+                //evecbuf = (LatticeFermionF) evec[k];
                 LOG(Message) << "duringCast"<< std::endl;
-                evectmp[k] = (LatticeFermion) evecbuf;
-                LOG(Message) << "double" << norm2(evec[k]) << std::endl;
-                LOG(Message) << "single" << norm2(evectmp[k]) << std::endl;
+                //evectmp[k] = (LatticeFermion) evecbuf;
+                //LOG(Message) << "double" << norm2(evec[k]) << std::endl;
+                //LOG(Message) << "single" << norm2(evectmp[k]) << std::endl;
                 //evec[k] = evec[k] - evectmp[k];
                 //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
                 //evec[k] = evectmp[k];
