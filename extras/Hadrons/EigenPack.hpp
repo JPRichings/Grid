@@ -73,7 +73,7 @@ public:
     {
         eval.resize(size);
         evec.resize(size, grid);
-        evectmp.resize(size,grid);
+        evectmp.resize(size, grid);
     }
 
     virtual void read(const std::string fileStem, const bool multiFile, const int traj = -1)
@@ -186,10 +186,10 @@ protected:
             //eval[k] = (RealD) tmp;
             // convert the eigen vectors to single precision
             LOG(Message) << "Andreas" << std::endl; //typeid(evec).name() << ":" << typeid(evectmp[0]).name() << std::endl;
-            localConvertJamesR(evec, evectmp);
+            localConvertJamesR(evec, evectmp[0]);
             LOG(Message) << "Chris" << std::endl;
             LOG(Message) << "double" << norm2(evec) << std::endl;
-            LOG(Message) << "single" << norm2(evectmp) << std::endl;
+            LOG(Message) << "single" << norm2(evectmp[0]) << std::endl;
             //evec[k] = evec[k] - evectmp[k];
             //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
             //evec[k] = evectmp[k];

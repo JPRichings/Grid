@@ -398,20 +398,20 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     peekLocalSite(s,in,lcoor);
     std::cout << GridLogMessage << "HiWorld" << std::endl;
   // typeid(s).name()
-//    for (unsigned int d = 0; d < QCD::Ns ; ++d)
-//  {
-//     for (unsigned int c = 0; c < QCD::Nc ; ++c)
-//      {
-//      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
-//      bufF = (ComplexF) bufD;
-//      bufD = (ComplexD) bufF;
-      assert(typeid(s) == typeid(ss));
-      ss=s;
-//      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
-//      }
-//    }
+    for (unsigned int d = 0; d < QCD::Ns ; ++d)
+  {
+     for (unsigned int c = 0; c < QCD::Nc ; ++c)
+      {
+      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
+      bufF = (ComplexF) bufD;
+      bufD = (ComplexD) bufF;
+     //assert(typeid(s) == typeid(ss));
+     // ss=s;
+      //QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
+      }
+    }
     std::cout << GridLogMessage << "HiWorld2" << std::endl;
-    pokeLocalSite(ss,out,lcoor);
+    //pokeLocalSite(ss,out,lcoor);
     std::cout << GridLogMessage << "HiWorld3" << std::endl;
   }
 }
