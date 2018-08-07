@@ -185,7 +185,7 @@ protected:
             // convert the eigen vectors to single precision
             localConvertJamesR(evec, evectmp[0]);
             LOG(Message) << "double" << norm2(evec) << std::endl;
-            LOG(Message) << "single" << norm2(evectmp) << std::endl;
+            LOG(Message) << "single" << norm2(evectmp[0]) << std::endl;
             //evec[k] = evec[k] - evectmp[k];
             //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
             //evec[k] = evectmp[k];
