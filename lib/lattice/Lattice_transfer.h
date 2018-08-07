@@ -384,8 +384,8 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     assert(ig->_ldimensions[d] == og->_ldimensions[d]);
     assert(ig->lSites() == og->lSites());
   }
-  //ComplexD bufD;
-  //ComplexF bufF;
+  ComplexD bufD;
+  ComplexF bufF;
   parallel_for(int idx=0;idx<ig->lSites();idx++)
   {
     sobj s;
