@@ -402,9 +402,12 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
   {
      for (unsigned int c = 0; c < QCD::Nc ; ++c)
       {
-      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
+      bufD = QCD::peekSpin(QCD::peekColour(s,c),d);
+      std::cout << GridLogMessage << bufD << std::endl;
       bufF = (ComplexF) bufD;
+      std::cout << GridLogMessage << bufF << std::endl;
       bufD = (ComplexD) bufF;
+      std::cout << GridLogMessage << bufD << std::endl;
      //assert(typeid(s) == typeid(ss));
      // ss=s;
       //QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
