@@ -176,7 +176,9 @@ protected:
                           + " wrong index (expected " + std::to_string(vecRecord.index) 
                           + ") in file '" + filename + "'");
         }
+        LOG(Message) << "Vera" << std::endl;
         eval = vecRecord.eval;
+        LOG(Message) << "James" << std::endl;
         if(true)
         {
             // convert the eigen values to single precision
