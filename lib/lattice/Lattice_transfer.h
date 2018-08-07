@@ -365,7 +365,7 @@ void localConvert(const Lattice<vobj> &in,Lattice<vvobj> &out)
   }
 }
 //dirty hack to convert eigen packs from double to single precision.
-template<class vobj,class vvobj>
+/*template<class vobj,class vvobj>
 void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
 {
   typedef typename vobj::scalar_object sobj;
@@ -398,9 +398,9 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     peekLocalSite(s,in,lcoor);
     std::cout << GridLogMessage << "HiWorld" << std::endl;
   // typeid(s).name()
-    for (int d = 0; d < QCD::Ns ; ++d)
-  {
-     for (int c = 0; c < QCD::Nc ; ++c)
+    for (unsigned int d = 0; d < QCD::Ns; ++d)
+    {
+     for (unsigned int c = 0; c < QCD::Nc; ++c)
       {
       bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
       std::cout << GridLogMessage << bufD << std::endl;
@@ -417,7 +417,7 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     //pokeLocalSite(ss,out,lcoor);
     std::cout << GridLogMessage << "HiWorld3" << std::endl;
   }
-}
+}*/
 // poke and peek spin and color undefined
 // Ns and Nc undefined
 //F=Grid::Lattice<Grid::QCD::vSpinColourVector>
