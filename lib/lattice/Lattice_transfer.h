@@ -398,11 +398,11 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     peekLocalSite(s,in,lcoor);
     std::cout << GridLogMessage << "HiWorld" << std::endl;
   // typeid(s).name()
-    for (unsigned int d = 0; d < QCD::Ns ; ++d)
+    for (int d = 0; d < QCD::Ns ; ++d)
   {
-     for (unsigned int c = 0; c < QCD::Nc ; ++c)
+     for (int c = 0; c < QCD::Nc ; ++c)
       {
-      bufD = QCD::peekSpin(QCD::peekColour(s,c),d);
+      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
       std::cout << GridLogMessage << bufD << std::endl;
       bufF = (ComplexF) bufD;
       std::cout << GridLogMessage << bufF << std::endl;
