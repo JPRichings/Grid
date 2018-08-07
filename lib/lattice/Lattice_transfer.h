@@ -405,6 +405,7 @@ void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
 //      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
 //      bufF = (ComplexF) bufD;
 //      bufD = (ComplexD) bufF;
+      assert(typeid(s) == typeid(ss));
       ss=s;
 //      ss = QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
 //      }
