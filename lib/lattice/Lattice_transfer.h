@@ -389,11 +389,11 @@ void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     sobj s;
     ssobj ss;
 
-    QCD::LatticeComplex buf;
+    //QCD::LatticeComplex buf;
 
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
-    buf = peekSpin(peekColour(in,0),0);
+    peekSpin(peekColour(in,0),0);
     peekLocalSite(s,in,lcoor);
     //ss=s;
     std::cout << GridLogMessage << "HiThisISBUF:" << buf << std::endl;
