@@ -389,7 +389,7 @@ void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     sobj s;
     ssobj ss;
 
-    LatticeComplex buf;
+    QCD::LatticeComplex buf;
 
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
