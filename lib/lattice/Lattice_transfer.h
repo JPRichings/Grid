@@ -396,7 +396,7 @@ void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     peekSpin(peekColour(in,0),0);
     peekLocalSite(s,in,lcoor);
     //ss=s;
-    std::cout << GridLogMessage << "HiThisISBUF:" << buf << std::endl;
+    std::cout << GridLogMessage << "HiThisISBUF:" << std::endl;
     //pokeLocalSite(ss,out,lcoor);
   }
 }
