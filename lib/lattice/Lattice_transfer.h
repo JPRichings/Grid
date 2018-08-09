@@ -393,10 +393,10 @@ void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
 
     std::vector<int> lcoor(ni);
     ig->LocalIndexToLocalCoor(idx,lcoor);
-    peekSpin(peekColour(in,0),0);
+    auto buf = peekSpin(peekColour(in,0),0);
     peekLocalSite(s,in,lcoor);
     //ss=s;
-    std::cout << GridLogMessage << "HiThisISBUF:" << std::endl;
+    std::cout << GridLogMessage << "HiThisISBUF:" << buf << std::endl;
     //pokeLocalSite(ss,out,lcoor);
   }
 }
