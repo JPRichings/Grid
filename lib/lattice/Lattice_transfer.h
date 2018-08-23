@@ -365,7 +365,7 @@ void localConvert(const Lattice<vobj> &in,Lattice<vvobj> &out)
   }
 }
 
-template<class vobj,class vvobj>
+/*template<class vobj,class vvobj>
 void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
 {
   typedef typename vobj::scalar_object sobj;
@@ -399,7 +399,8 @@ void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
     std::cout << GridLogMessage << "HiThisISBUF:" << buf << std::endl;
     //pokeLocalSite(ss,out,lcoor);
   }
-}
+}*/
+
 //dirty hack to convert eigen packs from double to single precision.
 /*template<class vobj,class vvobj>
 void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
