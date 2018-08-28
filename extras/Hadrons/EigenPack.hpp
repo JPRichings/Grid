@@ -59,7 +59,8 @@ public:
 //F=Grid::Lattice<Grid::QCD::vSpinColourVector>
     std::vector<RealD> eval;
     std::vector<F>     evec;
-    std::vector<F>     evectmp;
+    std::vector<LatticeSpinColourVectorF> evectmp;     // Grid::Lattice<Grid::QCD::vSpinColourVector>
+    std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
     PackRecord         record;
 public:
     EigenPack(void)          = default;
@@ -75,6 +76,7 @@ public:
         eval.resize(size);
         evec.resize(size, grid);
         evectmp.resize(size, grid);
+        evec_result.resize(size, grid);
     }
 
     virtual void read(const std::string fileStem, const bool multiFile, const int traj = -1)
@@ -83,7 +85,7 @@ public:
         {
             for(int k = 0; k < evec.size(); ++k)
             {
-                basicReadSingle(evec[k], eval[k], evecFilename(fileStem, k, traj), k);
+                basicReadSingle(evec[k], eval[k], evecFilename(fileStem, k, traj), k, evec_result[k]);
             }
         }
         else
@@ -150,9 +152,9 @@ protected:
                 //eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
                 //localConvertJamesR(evec[k],evectmp[k]);
-                LOG(Message) << "beforeCast"<< std::endl;
+                LOG(Message) << "beforeCast" << std::endl;
                 //evecbuf = (LatticeFermionF) evec[k];
-                LOG(Message) << "duringCast"<< std::endl;
+                LOG(Message) << "duringCast" << std::endl;
                 //evectmp[k] = (LatticeFermion) evecbuf;
                 //LOG(Message) << "double" << norm2(evec[k]) << std::endl;
                 //LOG(Message) << "single" << norm2(evectmp[k]) << std::endl;
@@ -167,7 +169,7 @@ protected:
 
     template <typename T>
     void basicReadSingle(T &evec, double &eval, const std::string filename, 
-                         const unsigned int index)
+                         const unsigned int index, T &evec_result)
     {
         ScidacReader binReader;
         VecRecord    vecRecord;
@@ -187,18 +189,26 @@ protected:
         LOG(Message) << "James" << std::endl;
         if(true)
         {
-            // convert the eigen values to single precision
+
+            //convert the eigen values to single precision
             //RealF tmp = (RealF) eval[k];
             //eval[k] = (RealD) tmp;
-            // convert the eigen vectors to single precision
-            //LOG(Message) << "Andreas" << std::endl; //typeid(evec).name() << ":" << typeid(evectmp[0]).name() << std::endl;
+
+            // Convert eigenvectors to Single precision
+
+            LOG(Message) << "Andreas" << std::endl; //typeid(evec).name() << ":" << typeid(evectmp[0]).name() << std::endl;
+
+            precisionChange(evectmp[0], evec);
+            
+            precisionChange(evec_result, evectmp[0]);
+
             //localConvertJPR(evec, evectmp[0]);
-            //LOG(Message) << "Chris" << std::endl;
-            //LOG(Message) << "double" << norm2(evec) << std::endl;
-            //LOG(Message) << "single" << norm2(evectmp[0]) << std::endl;
-            //evec[k] = evec[k] - evectmp[k];
-            //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
-            //evec[k] = evectmp[k];
+            LOG(Message) << "Chris" << std::endl;
+            LOG(Message) << "double" << norm2(evec) << std::endl;
+            LOG(Message) << "single" << norm2(evec_result) << std::endl;
+            evec = evec - evec_result;
+            LOG(Message) << "diff" << norm2(evec) << std::endl;
+            evec = evec_result;
 
         }
         binReader.close();
@@ -281,7 +291,7 @@ public:
         {
             for(int k = 0; k < this->evec.size(); ++k)
             {
-                this->basicReadSingle(this->evec[k], this->eval[k], this->evecFilename(fileStem + "_fine", k, traj), k);
+                this->basicReadSingle(this->evec[k], this->eval[k], this->evecFilename(fileStem + "_fine", k, traj), k, this->evec[k]);
             }
         }
         else
@@ -296,7 +306,7 @@ public:
         {
             for(int k = 0; k < evecCoarse.size(); ++k)
             {
-                this->basicReadSingle(evecCoarse[k], evalCoarse[k], this->evecFilename(fileStem + "_coarse", k, traj), k);
+                this->basicReadSingle(evecCoarse[k], evalCoarse[k], this->evecFilename(fileStem + "_coarse", k, traj), k, evecCoarse[k]);
             }
         }
         else

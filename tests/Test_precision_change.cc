@@ -73,7 +73,7 @@ int main (int argc, char ** argv)
   // Fermion fields
   LatticeFermionD    src(FGrid); random(RNG5,src);
   LatticeFermionF    tmp(FGrid_f); tmp=zero;
-  LatticeFermionD result(FGrid_d); result=zero;
+  LatticeFermionD result(FGrid); result=zero;
 
   // Increase precision of source
 
@@ -108,11 +108,19 @@ int main (int argc, char ** argv)
 
   // Logging
 
-  std::cout  << GridLogMessage << "Source:" << site_src << std::endl;
+  std::cout << setprecision(30) << GridLogMessage << "Source:" << site_src << std::endl;
     
   std::cout << GridLogMessage << "tmp:" << site_tmp << std::endl;
 
   std::cout << GridLogMessage << "result:" << site_result << std::endl;
+
+  std::cout << GridLogMessage << "result:" << norm2(src) <<std::endl;
+
+  std::cout << GridLogMessage << "tmp:" << norm2(tmp) << std::endl;
+
+  src = result - src;
+
+  std::cout << GridLogMessage << "diff:" << norm2(src) << std::endl;
 
   Grid_finalize();
 }
