@@ -157,7 +157,7 @@ protected:
             
                 precisionChange(evec_result[k], evectmp[k]);
 
-                //vSpinColourVector::scalar_object  site_evec;
+                vSpinColourVectorD::scalar_object  site_evec;
                 
                 LOG(Message) << "duringCast" << std::endl;
                 LOG(Message) << "double: " << norm2(evec[k]) << std::endl;
@@ -165,9 +165,9 @@ protected:
                 evec[k] = evec_result[k] - evec[k];
                 LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
 
-                //std::vector<int> lcoor = {0, 0, 0, 0};
-                //peekSite(site_evec, evec[k], lcoor);
-                //LOG(Message) << "evec site: " << site_evec << std::endl;
+                std::vector<int> lcoor = {0, 0, 0, 0};
+                peekSite(site_evec, evec[k], lcoor);
+                LOG(Message) << "evec site: " << site_evec << std::endl;
                 evec[k] = evec_result[k];
 
             }
