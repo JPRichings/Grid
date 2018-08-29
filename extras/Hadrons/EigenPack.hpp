@@ -189,6 +189,10 @@ protected:
         LOG(Message) << "After eval extracted" << std::endl;
         if(true)
         {
+            //site print to log set up
+            std::vector<int> lcoor = {0, 0, 0, 0};
+            vSpinColourVectorD::scalar_object  site_evec; //LatticeSpinColourVectorF
+            vSpinColourVectorD::scalar_object  site_result;
 
             //convert the eigen values to single precision
             //RealF tmp = (RealF) eval[k];
@@ -204,12 +208,18 @@ protected:
             
             precisionChange(evec_result, evectmp[0]);
 
+            peekSite(site_evec,evec,lcoor);
+            peekSite(site_result,evec_result,lcoor);
+
             //localConvertJPR(evec, evectmp[0]);
             LOG(Message) << "After Precision change" << std::endl;
             LOG(Message) << "norm2 double: " << norm2(evec) << std::endl;
             LOG(Message) << "norm2 single: " << norm2(evec_result) << std::endl;
             evec = evec - evec_result;
             LOG(Message) << "norm2 diff: " << norm2(evec) << std::endl;
+            
+            LOG(Message) << "evec site: " << site_evec << std::endl;
+            LOG(Message) << "result site: " << site_result << std::endl;
             evec = evec_result;
 
         }
