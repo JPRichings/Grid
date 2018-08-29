@@ -216,8 +216,8 @@ protected:
             LOG(Message) << "norm2 double: " << norm2(evec) << std::endl;
             LOG(Message) << "norm2 single: " << norm2(evec_result) << std::endl;
             evec = evec - evec_result;
-            LOG(Message) << "norm2 diff: " << evec << std::endl;
-            
+            LOG(Message) << "norm2 diff: " << norm2(evec) << std::endl;
+            LOG(Message) << "tmp: " << evectmp[0] << std::endl;
             //LOG(Message) << "evec site: " << site_evec << std::endl;
             //LOG(Message) << "result site: " << site_result << std::endl;
             evec = evec_result;
