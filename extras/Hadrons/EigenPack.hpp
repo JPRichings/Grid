@@ -198,7 +198,7 @@ protected:
 
             LOG(Message) << "Before Precision change" << std::endl; 
             
-            /LOG(Message) << typeid(evec).name() << ":" << typeid(evec).name() << std::endl;
+            LOG(Message) << typeid(evec).name() << ":" << typeid(evec).name() << std::endl;
 
             precisionChange(evectmp[0], evec);
             
