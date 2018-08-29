@@ -90,7 +90,7 @@ public:
         }
         else
         {
-            basicRead(evec, eval, evecFilename(fileStem, -1, traj), evec.size());
+            basicRead(evec, eval, evecFilename(fileStem, -1, traj), evec.size(), evec_result);
         }
     }
 
@@ -125,7 +125,7 @@ protected:
 
     template <typename T>
     void basicRead(std::vector<T> &evec, std::vector<double> &eval,
-                   const std::string filename, const unsigned int size)
+                   const std::string filename, const unsigned int size, std::vector<T> &evec_result)
     {
         ScidacReader    binReader;
         //LatticeFermionF evecbuf;
@@ -152,15 +152,16 @@ protected:
                 //eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
                 //localConvertJamesR(evec[k],evectmp[k]);
+                precisionChange(evectmp[k], evec[k]);
+            
+                precisionChange(evec_result[k], evectmp[k]);
                 LOG(Message) << "beforeCast" << std::endl;
-                //evecbuf = (LatticeFermionF) evec[k];
                 LOG(Message) << "duringCast" << std::endl;
-                //evectmp[k] = (LatticeFermion) evecbuf;
-                //LOG(Message) << "double" << norm2(evec[k]) << std::endl;
-                //LOG(Message) << "single" << norm2(evectmp[k]) << std::endl;
-                //evec[k] = evec[k] - evectmp[k];
-                //LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
-                //evec[k] = evectmp[k];
+                LOG(Message) << "double" << norm2(evec[k]) << std::endl;
+                LOG(Message) << "single" << norm2(evec_result[k]) << std::endl;
+                evec[k] = evec[k] - evec_result[k];
+                LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
+                evec[k] = evec_result[k];
 
             }
         }
@@ -213,7 +214,7 @@ protected:
 
             //localConvertJPR(evec, evectmp[0]);
             LOG(Message) << "After Precision change" << std::endl;
-            LOG(Message) << setprecision(30) << "norm2 double: " << norm2(evec) << std::endl;
+            LOG(Message) << "norm2 double: " << norm2(evec) << std::endl;
             LOG(Message) << "norm2 single: " << norm2(evec_result) << std::endl;
             evec = evec - evec_result;
             LOG(Message) << "norm2 diff: " << norm2(evec) << std::endl;
@@ -308,7 +309,7 @@ public:
         }
         else
         {
-            this->basicRead(this->evec, this->eval, this->evecFilename(fileStem + "_fine", -1, traj), this->evec.size());
+            this->basicRead(this->evec, this->eval, this->evecFilename(fileStem + "_fine", -1, traj), this->evec.size(), this->evec);
         }
     }
 
@@ -323,7 +324,7 @@ public:
         }
         else
         {
-            this->basicRead(evecCoarse, evalCoarse, this->evecFilename(fileStem + "_coarse", -1, traj), evecCoarse.size());
+            this->basicRead(evecCoarse, evalCoarse, this->evecFilename(fileStem + "_coarse", -1, traj), evecCoarse.size(), evecCoarse);
         }
     }
 
