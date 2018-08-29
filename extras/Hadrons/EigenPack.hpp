@@ -214,7 +214,7 @@ protected:
             //localConvertJPR(evec, evectmp[0]);
             LOG(Message) << "After Precision change" << std::endl;
             LOG(Message) << "norm2 double: " << evec << std::endl;
-            LOG(Message) << "norm2 single: " << norm2(evec_result) << std::endl;
+            LOG(Message) << "norm2 single: " << evec_result << std::endl;
             evec = evec - evec_result;
             LOG(Message) << "norm2 diff: " << norm2(evec) << std::endl;
             
