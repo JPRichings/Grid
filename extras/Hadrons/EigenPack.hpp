@@ -184,9 +184,9 @@ protected:
                           + " wrong index (expected " + std::to_string(vecRecord.index) 
                           + ") in file '" + filename + "'");
         }
-        LOG(Message) << "Vera" << std::endl;
+        LOG(Message) << "Before eval extracted" << std::endl;
         eval = vecRecord.eval;
-        LOG(Message) << "James" << std::endl;
+        LOG(Message) << "After eval extracted" << std::endl;
         if(true)
         {
 
@@ -196,18 +196,20 @@ protected:
 
             // Convert eigenvectors to Single precision
 
-            LOG(Message) << "Andreas" << std::endl; //typeid(evec).name() << ":" << typeid(evectmp[0]).name() << std::endl;
+            LOG(Message) << "Before Precision change" << std::endl; 
+            
+            /LOG(Message) << typeid(evec).name() << ":" << typeid(evec).name() << std::endl;
 
             precisionChange(evectmp[0], evec);
             
             precisionChange(evec_result, evectmp[0]);
 
             //localConvertJPR(evec, evectmp[0]);
-            LOG(Message) << "Chris" << std::endl;
-            LOG(Message) << "double" << norm2(evec) << std::endl;
-            LOG(Message) << "single" << norm2(evec_result) << std::endl;
+            LOG(Message) << "After Precision change" << std::endl;
+            LOG(Message) << "norm2 double: " << norm2(evec) << std::endl;
+            LOG(Message) << "norm2 single: " << norm2(evec_result) << std::endl;
             evec = evec - evec_result;
-            LOG(Message) << "diff" << norm2(evec) << std::endl;
+            LOG(Message) << "norm2 diff: " << norm2(evec) << std::endl;
             evec = evec_result;
 
         }
