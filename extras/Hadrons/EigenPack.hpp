@@ -152,15 +152,16 @@ protected:
                 //eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
                 //localConvertJamesR(evec[k],evectmp[k]);
+                LOG(Message) << "beforeCast" << std::endl;
                 precisionChange(evectmp[k], evec[k]);
             
                 precisionChange(evec_result[k], evectmp[k]);
-                LOG(Message) << "beforeCast" << std::endl;
+                
                 LOG(Message) << "duringCast" << std::endl;
-                LOG(Message) << "double" << norm2(evec[k]) << std::endl;
-                LOG(Message) << "single" << norm2(evec_result[k]) << std::endl;
+                LOG(Message) << "double: " << evec[k] << std::endl;
+                LOG(Message) << "single: " << norm2(evec_result[k]) << std::endl;
                 evec[k] = evec[k] - evec_result[k];
-                LOG(Message) << "diff" << norm2(evec[k]) << std::endl;
+                LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
                 evec[k] = evec_result[k];
 
             }
