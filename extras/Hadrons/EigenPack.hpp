@@ -59,7 +59,8 @@ public:
 //F=Grid::Lattice<Grid::QCD::vSpinColourVector>
     std::vector<RealD> eval;
     std::vector<F>     evec;
-    std::vector<LatticeSpinColourVectorF> evectmp;     // Grid::Lattice<Grid::QCD::vSpinColourVector>
+    //std::vector<LatticeSpinColourVectorF> evectmp;
+    std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF>> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector>
     std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
     PackRecord         record;
 public:
