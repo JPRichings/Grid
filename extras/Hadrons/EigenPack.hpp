@@ -161,9 +161,9 @@ protected:
                 
                 LOG(Message) << "duringCast" << std::endl;
                 LOG(Message) << "double: " << norm2(evec[k]) << std::endl;
-                LOG(Message) << "single: " << norm2(evec_result[k]) << std::endl;
+                LOG(Message) << "single: " << evec_result[k] << std::endl;
                 evec[k] = evec_result[k] - evec[k];
-                LOG(Message) << "diff: " << evec[k] << std::endl;
+                LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
 
                 //std::vector<int> lcoor = {0, 0, 0, 0};
                 //peekSite(site_evec, evec[k], lcoor);
