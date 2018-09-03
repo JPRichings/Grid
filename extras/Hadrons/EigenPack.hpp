@@ -60,9 +60,10 @@ public:
     std::vector<RealD> eval;
     std::vector<F>     evec;
     //std::vector<LatticeSpinColourVectorF> evectmp;
-    std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector> // Grid::Lattice<Grid::QCD::vSpinColourVectorF>
+    std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF>> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector> // Grid::Lattice<Grid::QCD::vSpinColourVectorF>
     std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
     PackRecord         record;
+
 public:
     EigenPack(void)          = default;
     virtual ~EigenPack(void) = default;
@@ -160,6 +161,7 @@ protected:
                 vSpinColourVector::scalar_object  site_evec;
                 
                 
+                
                 LOG(Message) << "double: " << norm2(evec[k]) << std::endl;
                 LOG(Message) << "singletmp: " << norm2(evectmp[k]) << std::endl;
                 LOG(Message) << "single: " << norm2(evec_result[k]) << std::endl;
@@ -167,8 +169,8 @@ protected:
                 LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
 
                 std::vector<int> lcoor = {0, 0, 0, 0};
-                peekSite(site_evec, evec[k], lcoor);
-                LOG(Message) << "evec site: " << site_evec << std::endl;
+                //peekSite(site_evec, dummy, lcoor);
+                LOG(Message) << "evec site: " << evec[k]._odata[0] << std::endl;
                 evec[k] = evec_result[k];
 
             }
