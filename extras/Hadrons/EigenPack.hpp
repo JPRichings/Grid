@@ -60,7 +60,7 @@ public:
     std::vector<RealD> eval;
     std::vector<F>     evec;
     //std::vector<LatticeSpinColourVectorF> evectmp;
-    std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF>> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector>
+    std::vector<F> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector> // Grid::Lattice<Grid::QCD::vSpinColourVectorF>
     std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
     PackRecord         record;
 public:
@@ -152,11 +152,10 @@ protected:
                 //RealF tmp = (RealF) eval[k];
                 //eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
-                //localConvertJamesR(evec[k],evectmp[k]);
                 LOG(Message) << "beforeCast" << std::endl;
                 precisionChange(evectmp[k], evec[k]);
                 LOG(Message) << "duringCast" << std::endl;
-                precisionChange(evec_result[k], evectmp[k]);
+                precisionChange(evec_result[k], evectmp[k]); // this is the issue!!!
 
                 //vSpinColourVectorD::scalar_object  site_evec;
                 
