@@ -165,12 +165,16 @@ protected:
                 LOG(Message) << "double: " << norm2(evec[k]) << std::endl;
                 LOG(Message) << "singletmp: " << norm2(evectmp[k]) << std::endl;
                 LOG(Message) << "single: " << norm2(evec_result[k]) << std::endl;
-                evec[k] = evec_result[k] - evec[k];
-                LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
+                
 
                 std::vector<int> lcoor = {0, 0, 0, 0};
                 //peekSite(site_evec, dummy, lcoor);
                 LOG(Message) << "evec site: " << evec[k]._odata[0] << std::endl;
+                LOG(Message) << "evectmp site: " << evectmp[k]._odata[0] << std::endl;
+                LOG(Message) << "evec_result site: " << evec_result[k]._odata[0] << std::endl;
+                evec[k] = evec_result[k] - evec[k];
+                LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
+                LOG(Message) << "evec diff site: " << evec[k]._odata[0] << std::endl;
                 evec[k] = evec_result[k];
 
             }
