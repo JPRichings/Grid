@@ -60,7 +60,7 @@ public:
     std::vector<RealD> eval;
     std::vector<F>     evec;
     //std::vector<LatticeSpinColourVectorF> evectmp;
-    std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF>> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector> // Grid::Lattice<Grid::QCD::vSpinColourVectorF>
+    //std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF>> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector> // Grid::Lattice<Grid::QCD::vSpinColourVectorF>
     std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
     PackRecord         record;
 
@@ -79,6 +79,14 @@ public:
         evec.resize(size, grid);
         evectmp.resize(size, grid);
         evec_result.resize(size, grid);
+
+        // Single precision lattice set up
+        GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(GridDefaultLatt(), GridDefaultSimd(Nd,vComplexF::Nsimd()),GridDefaultMpi());
+        GridRedBlackCartesian * UrbGrid_f = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid_f);
+        GridCartesian         * FGrid_f   = SpaceTimeGrid::makeFiveDimGrid(Ls,UGrid_f);
+        GridRedBlackCartesian * FrbGrid_f = SpaceTimeGrid::makeFiveDimRedBlackGrid(Ls,UGrid_f);
+        LatticeFermionF tmp(FGrid_f); tmp=zero;
+
     }
 
     virtual void read(const std::string fileStem, const bool multiFile, const int traj = -1)
@@ -154,23 +162,23 @@ protected:
                 //eval[k] = (RealD) tmp;
                 // convert the eigen vectors to single precision
                 LOG(Message) << "beforeCast" << std::endl;
-                precisionChange(evectmp[k], evec[k]);
+                precisionChange(tmp, evec[k]);
                 LOG(Message) << "duringCast" << std::endl;
-                precisionChange(evec_result[k], evectmp[k]); // this is the issue!!!
+                precisionChange(evec_result[k], tmp); // this is the issue!!!
 
                 vSpinColourVector::scalar_object  site_evec;
                 
                 
                 
                 LOG(Message) << "double: " << norm2(evec[k]) << std::endl;
-                LOG(Message) << "singletmp: " << norm2(evectmp[k]) << std::endl;
+                LOG(Message) << "singletmp: " << norm2(tmp) << std::endl;
                 LOG(Message) << "single: " << norm2(evec_result[k]) << std::endl;
                 
 
                 std::vector<int> lcoor = {0, 0, 0, 0};
                 //peekSite(site_evec, dummy, lcoor);
                 LOG(Message) << "evec site: " << evec[k]._odata[0] << std::endl;
-                LOG(Message) << "evectmp site: " << evectmp[k]._odata[0] << std::endl;
+                LOG(Message) << "evectmp site: " << tmp._odata[0] << std::endl;
                 LOG(Message) << "evec_result site: " << evec_result[k]._odata[0] << std::endl;
                 evec[k] = evec_result[k] - evec[k];
                 LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
