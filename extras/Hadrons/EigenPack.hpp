@@ -80,6 +80,8 @@ public:
         evectmp.resize(size, grid);
         evec_result.resize(size, grid);
 
+        const int Ls = 16;
+
         // Single precision lattice set up
         GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(GridDefaultLatt(), GridDefaultSimd(Nd,vComplexF::Nsimd()),GridDefaultMpi());
         GridRedBlackCartesian * UrbGrid_f = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid_f);
