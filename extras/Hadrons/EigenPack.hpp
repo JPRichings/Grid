@@ -64,6 +64,16 @@ public:
     std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
     PackRecord         record;
 
+
+        const int Ls = 16;
+
+        // Single precision lattice set up
+        GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(GridDefaultLatt(), GridDefaultSimd(Nd,vComplexF::Nsimd()),GridDefaultMpi());
+        GridRedBlackCartesian * UrbGrid_f = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid_f);
+        GridCartesian         * FGrid_f   = SpaceTimeGrid::makeFiveDimGrid(Ls,UGrid_f);
+        GridRedBlackCartesian * FrbGrid_f = SpaceTimeGrid::makeFiveDimRedBlackGrid(Ls,UGrid_f);
+        LatticeFermionF tmp(FGrid_f); tmp=zero;
+
 public:
     EigenPack(void)          = default;
     virtual ~EigenPack(void) = default;
@@ -79,15 +89,6 @@ public:
         evec.resize(size, grid);
         evectmp.resize(size, grid);
         evec_result.resize(size, grid);
-
-        const int Ls = 16;
-
-        // Single precision lattice set up
-        GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(GridDefaultLatt(), GridDefaultSimd(Nd,vComplexF::Nsimd()),GridDefaultMpi());
-        GridRedBlackCartesian * UrbGrid_f = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid_f);
-        GridCartesian         * FGrid_f   = SpaceTimeGrid::makeFiveDimGrid(Ls,UGrid_f);
-        GridRedBlackCartesian * FrbGrid_f = SpaceTimeGrid::makeFiveDimRedBlackGrid(Ls,UGrid_f);
-        LatticeFermionF tmp(FGrid_f); tmp=zero;
 
     }
 
