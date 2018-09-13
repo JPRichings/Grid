@@ -56,9 +56,12 @@ public:
         VecRecord(void): index(0), eval(0.) {}
     };
 public:
+//F=Grid::Lattice<Grid::QCD::vSpinColourVector>
     std::vector<RealD> eval;
     std::vector<F>     evec;
+
     PackRecord         record;
+
 public:
     EigenPack(void)          = default;
     virtual ~EigenPack(void) = default;
@@ -80,7 +83,7 @@ public:
         {
             for(int k = 0; k < evec.size(); ++k)
             {
-                basicReadSingle(evec[k], eval[k], evecFilename(fileStem, k, traj), k);
+	      basicReadSingle(evec[k], eval[k], evecFilename(fileStem, k, traj), k);
             }
         }
         else
@@ -123,6 +126,24 @@ protected:
                    const std::string filename, const unsigned int size)
     {
         ScidacReader    binReader;
+        //LatticeFermionF evecbuf;
+
+	GridBase * grid = evec[0]._grid;
+	std::vector<int> latt5 = grid->FullDimensions();
+	
+	int Ls = latt5[0];
+	      
+	std::vector<int> latt4(Nd);
+	for(int mu=0;mu<Nd;mu++) latt4[mu] = latt5[mu+1];
+	
+	LOG(Message) << "Lattice4 :" << latt4 << std::endl; //     [12, 24, 24, 64]
+	LOG(Message) << "Lattice5 :" << latt5 << std::endl; // [16, 12, 24, 24, 64]
+	
+	GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(latt4,
+									   GridDefaultSimd(Nd,vComplexF::Nsimd()),
+									   GridDefaultMpi());
+	GridRedBlackCartesian * FrbGrid_f = SpaceTimeGrid::makeFiveDimRedBlackGrid(Ls,UGrid_f);
+
 
         binReader.open(filename);
         binReader.skipPastObjectRecord(SCIDAC_FILE_XML);
@@ -139,8 +160,46 @@ protected:
                               + ") in file '" + filename + "'");
             }
             eval[k] = vecRecord.eval;
+            if(true)
+            {
+	      T evec_result(grid);
+
+	      typedef typename T::vector_object vobj;
+	      typedef typename vobj::SinglePrecision vobj_f;
+	      typedef Lattice<vobj_f> T_F;
+	      T_F tmp(FrbGrid_f); tmp=zero;
+
+	      GridBase * grid1 = tmp._grid;
+
+	      std::vector<int> tmpDim = grid1->FullDimensions();
+
+              LOG(Message) << "new lattice: " << tmpDim << std::endl;
+
+	      // convert the eigen values to and from single precision
+	      LOG(Message) << "beforeCast" << std::endl;
+	      precisionChange(tmp, evec[k]);
+	      LOG(Message) << "duringCast" << std::endl;
+	      precisionChange(evec_result, tmp); // this is the issue!!!
+
+	      LOG(Message) << "double     : " << norm2(evec[k]) << std::endl;
+	      LOG(Message) << "tmp        : " << norm2(tmp) << std::endl;
+	      LOG(Message) << "reconverted: " << norm2(evec_result) << std::endl;
+                
+	      LOG(Message) << "evec site: " << evec[k]._odata[0] << std::endl;
+	      LOG(Message) << "evectmp site: " << tmp._odata[0] << std::endl;
+	      LOG(Message) << "evec_result site: " << evec_result._odata[0] << std::endl;
+
+	      evec[k] = evec_result - evec[k];
+	      LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
+	      LOG(Message) << "evec diff site: " << evec[k]._odata[0] << std::endl;
+
+	      evec[k] = evec_result;
+
+            }
         }
         binReader.close();
+	delete UGrid_f;
+	delete FrbGrid_f;
     }
 
     template <typename T>
@@ -160,7 +219,46 @@ protected:
                           + " wrong index (expected " + std::to_string(vecRecord.index) 
                           + ") in file '" + filename + "'");
         }
+        LOG(Message) << "Before eval extracted" << std::endl;
         eval = vecRecord.eval;
+        LOG(Message) << "After eval extracted" << std::endl;
+        if(true)
+        {
+#if 0
+            //site print to log set up
+            std::vector<int> lcoor = {0, 0, 0, 0};
+            //vSpinColourVectorD::scalar_object  site_evec; //LatticeSpinColourVectorF
+            //vSpinColourVectorD::scalar_object  site_result;
+
+            //convert the eigen values to single precision
+            //RealF tmp = (RealF) eval[k];
+            //eval[k] = (RealD) tmp;
+
+            // Convert eigenvectors to Single precision
+
+            LOG(Message) << "Before Precision change" << std::endl; 
+            
+            LOG(Message) << typeid(evec).name() << ":" << typeid(evec).name() << std::endl;
+
+            precisionChange(evectmp[0], evec);
+            
+            precisionChange(evec_result, evectmp[0]);
+
+            //peekSite(site_evec, evec, lcoor);
+            //peekSite(site_result, evec_result, lcoor);
+
+            //localConvertJPR(evec, evectmp[0]);
+            LOG(Message) << "After Precision change" << std::endl;
+            LOG(Message) << "norm2 double: " << norm2(evec) << std::endl;
+            LOG(Message) << "norm2 single: " << norm2(evec_result) << std::endl;
+            evec = evec - evec_result;
+            LOG(Message) << "norm2 diff: " << evec << std::endl;
+            //LOG(Message) << "tmp: " << evectmp[0] << std::endl;
+            //LOG(Message) << "evec site: " << site_evec << std::endl;
+            //LOG(Message) << "result site: " << site_result << std::endl;
+            evec = evec_result;
+#endif
+        }
         binReader.close();
     }
 

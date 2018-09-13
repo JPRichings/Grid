@@ -51,6 +51,7 @@ namespace Grid {
     typedef typename T::Complexified Complexified;
     typedef typename T::Realified Realified;
     typedef typename T::DoublePrecision DoublePrecision;
+    typedef typename T::SinglePrecision SinglePrecision;
     enum { TensorLevel = T::TensorLevel };
   };
 
@@ -67,6 +68,7 @@ namespace Grid {
     typedef ComplexF Complexified;
     typedef RealF Realified;
     typedef RealD DoublePrecision;
+    typedef RealF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<RealD> {
@@ -79,6 +81,7 @@ namespace Grid {
     typedef ComplexD Complexified;
     typedef RealD Realified;
     typedef RealD DoublePrecision;
+    typedef RealF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<ComplexF> {
@@ -91,6 +94,7 @@ namespace Grid {
     typedef ComplexF Complexified;
     typedef RealF Realified;
     typedef ComplexD DoublePrecision;
+    typedef ComplexF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<ComplexD> {
@@ -103,6 +107,7 @@ namespace Grid {
     typedef ComplexD Complexified;
     typedef RealD Realified;
     typedef ComplexD DoublePrecision;
+    typedef ComplexF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<Integer> {
@@ -115,6 +120,7 @@ namespace Grid {
     typedef void Complexified;
     typedef void Realified;
     typedef void DoublePrecision;
+    typedef void SinglePrecision;
     enum { TensorLevel = 0 };
   };
 
@@ -128,6 +134,7 @@ namespace Grid {
     typedef vComplexF Complexified;
     typedef vRealF Realified;
     typedef vRealD DoublePrecision;
+    typedef vRealF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<vRealD> {
@@ -140,6 +147,7 @@ namespace Grid {
     typedef vComplexD Complexified;
     typedef vRealD Realified;
     typedef vRealD DoublePrecision;
+    typedef vRealF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<vComplexH> {
@@ -152,6 +160,7 @@ namespace Grid {
     typedef vComplexH Complexified;
     typedef vRealH Realified;
     typedef vComplexD DoublePrecision;
+    typedef vComplexF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<vComplexF> {
@@ -164,6 +173,7 @@ namespace Grid {
     typedef vComplexF Complexified;
     typedef vRealF Realified;
     typedef vComplexD DoublePrecision;
+    typedef vComplexF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<vComplexD> {
@@ -176,6 +186,7 @@ namespace Grid {
     typedef vComplexD Complexified;
     typedef vRealD Realified;
     typedef vComplexD DoublePrecision;
+    typedef vComplexF SinglePrecision;
     enum { TensorLevel = 0 };
   };
   template<> class GridTypeMapper<vInteger> {
@@ -188,6 +199,7 @@ namespace Grid {
     typedef void Complexified;
     typedef void Realified;
     typedef void DoublePrecision;
+    typedef void SinglePrecision;
     enum { TensorLevel = 0 };
   };
 

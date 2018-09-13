@@ -28,6 +28,8 @@ Author: Peter Boyle <paboyle@ph.ed.ac.uk>
 #ifndef GRID_LATTICE_TRANSFER_H
 #define GRID_LATTICE_TRANSFER_H
 
+#include <Grid/qcd/QCD.h>
+
 namespace Grid {
 
 inline void subdivides(GridBase *coarse,GridBase *fine)
@@ -363,6 +365,99 @@ void localConvert(const Lattice<vobj> &in,Lattice<vvobj> &out)
   }
 }
 
+/*template<class vobj,class vvobj>
+void localConvertJPR(const Lattice<vobj> &in,Lattice<vvobj> &out)
+{
+  typedef typename vobj::scalar_object sobj;
+  typedef typename vvobj::scalar_object ssobj;
+
+  GridBase *ig = in._grid;
+  GridBase *og = out._grid;
+
+  int ni = ig->_ndimension;
+  int no = og->_ndimension;
+
+  assert(ni == no);
+
+  for(int d=0;d<no;d++){
+    assert(ig->_processors[d]  == og->_processors[d]);
+    assert(ig->_ldimensions[d] == og->_ldimensions[d]);
+    assert(ig->lSites() == og->lSites());
+  }
+
+  parallel_for(int idx=0;idx<ig->lSites();idx++){
+    sobj s;
+    ssobj ss;
+
+    //QCD::LatticeComplex buf;
+
+    std::vector<int> lcoor(ni);
+    ig->LocalIndexToLocalCoor(idx,lcoor);
+    auto buf = peekSpin(peekColour(in,0),0);
+    peekLocalSite(s,in,lcoor);
+    //ss=s;
+    std::cout << GridLogMessage << "HiThisISBUF:" << buf << std::endl;
+    //pokeLocalSite(ss,out,lcoor);
+  }
+}*/
+
+//dirty hack to convert eigen packs from double to single precision.
+/*template<class vobj,class vvobj>
+void localConvertJamesR(const Lattice<vobj> &in,Lattice<vvobj> &out)
+{
+  typedef typename vobj::scalar_object sobj;
+  typedef typename vvobj::scalar_object ssobj;
+
+  GridBase *ig = in._grid;
+  GridBase *og = out._grid;
+
+  int ni = ig->_ndimension;
+  int no = og->_ndimension;
+
+  assert(ni == no);
+
+  for(int d=0;d<no;d++){
+    assert(ig->_processors[d]  == og->_processors[d]);
+    assert(ig->_ldimensions[d] == og->_ldimensions[d]);
+    assert(ig->lSites() == og->lSites());
+  }
+  ComplexD bufD;
+  ComplexF bufF;
+  parallel_for(int idx=0;idx<ig->lSites();idx++)
+  {
+    sobj s;
+    ssobj ss;
+    //int Nc = 3;
+    //int Ns = 4;
+
+    std::vector<int> lcoor(ni);
+    ig->LocalIndexToLocalCoor(idx,lcoor);
+    peekLocalSite(s,in,lcoor);
+    std::cout << GridLogMessage << "HiWorld" << std::endl;
+  // typeid(s).name()
+    for (unsigned int d = 0; d < QCD::Ns; ++d)
+    {
+     for (unsigned int c = 0; c < QCD::Nc; ++c)
+      {
+      bufD = QCD::peekColour(QCD::peekSpin(s,d),c);
+      std::cout << GridLogMessage << bufD << std::endl;
+      bufF = (ComplexF) bufD;
+      std::cout << GridLogMessage << bufF << std::endl;
+      bufD = (ComplexD) bufF;
+      std::cout << GridLogMessage << bufD << std::endl;
+     //assert(typeid(s) == typeid(ss));
+     // ss=s;
+      //QCD::pokeColour(QCD::pokeSpin(bufD,d),c);
+      }
+    }
+    std::cout << GridLogMessage << "HiWorld2" << std::endl;
+    //pokeLocalSite(ss,out,lcoor);
+    std::cout << GridLogMessage << "HiWorld3" << std::endl;
+  }
+}*/
+// poke and peek spin and color undefined
+// Ns and Nc undefined
+//F=Grid::Lattice<Grid::QCD::vSpinColourVector>
 
 template<class vobj>
 void InsertSlice(const Lattice<vobj> &lowDim,Lattice<vobj> & higherDim,int slice, int orthog)
