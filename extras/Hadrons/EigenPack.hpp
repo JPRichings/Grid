@@ -59,20 +59,8 @@ public:
 //F=Grid::Lattice<Grid::QCD::vSpinColourVector>
     std::vector<RealD> eval;
     std::vector<F>     evec;
-    //std::vector<LatticeSpinColourVectorF> evectmp;
-    std::vector<Grid::Lattice<Grid::QCD::vSpinColourVectorF>> evectmp;    // Grid::Lattice<Grid::QCD::vSpinColourVector> // Grid::Lattice<Grid::QCD::vSpinColourVectorF>
-    std::vector<F>     evec_result; // Grid::Lattice<Grid::QCD::vSpinColourVector>
+
     PackRecord         record;
-
-
-        const int Ls = 16;
-
-        // Single precision lattice set up
-        GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(GridDefaultLatt(), GridDefaultSimd(Nd,vComplexF::Nsimd()),GridDefaultMpi());
-        GridRedBlackCartesian * UrbGrid_f = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid_f);
-        GridCartesian         * FGrid_f   = SpaceTimeGrid::makeFiveDimGrid(Ls,UGrid_f);
-        GridRedBlackCartesian * FrbGrid_f = SpaceTimeGrid::makeFiveDimRedBlackGrid(Ls,UGrid_f);
-        LatticeFermionF tmp(FGrid_f); tmp=zero;
 
 public:
     EigenPack(void)          = default;
@@ -87,9 +75,6 @@ public:
     {
         eval.resize(size);
         evec.resize(size, grid);
-        evectmp.resize(size, grid);
-        evec_result.resize(size, grid);
-
     }
 
     virtual void read(const std::string fileStem, const bool multiFile, const int traj = -1)
@@ -98,12 +83,12 @@ public:
         {
             for(int k = 0; k < evec.size(); ++k)
             {
-                basicReadSingle(evec[k], eval[k], evecFilename(fileStem, k, traj), k, evec_result[k]);
+	      basicReadSingle(evec[k], eval[k], evecFilename(fileStem, k, traj), k);
             }
         }
         else
         {
-            basicRead(evec, eval, evecFilename(fileStem, -1, traj), evec.size(), evec_result);
+            basicRead(evec, eval, evecFilename(fileStem, -1, traj), evec.size());
         }
     }
 
@@ -138,10 +123,27 @@ protected:
 
     template <typename T>
     void basicRead(std::vector<T> &evec, std::vector<double> &eval,
-                   const std::string filename, const unsigned int size, std::vector<T> &evec_result)
+                   const std::string filename, const unsigned int size)
     {
         ScidacReader    binReader;
         //LatticeFermionF evecbuf;
+
+	GridBase * grid = evec[0]._grid;
+	std::vector<int> latt5 = grid->FullDimensions();
+	
+	int Ls = latt5[0];
+	      
+	std::vector<int> latt4(Nd);
+	for(int mu=0;mu<Nd;mu++) latt4[mu] = latt5[mu+1];
+	
+	LOG(Message) << "Lattice4 :" << latt4 << std::endl; //     [12, 24, 24, 64]
+	LOG(Message) << "Lattice5 :" << latt5 << std::endl; // [16, 12, 24, 24, 64]
+	
+	GridCartesian         * UGrid_f   = SpaceTimeGrid::makeFourDimGrid(latt4,
+									   GridDefaultSimd(Nd,vComplexF::Nsimd()),
+									   GridDefaultMpi());
+	GridRedBlackCartesian * FrbGrid_f = SpaceTimeGrid::makeFiveDimRedBlackGrid(Ls,UGrid_f);
+
 
         binReader.open(filename);
         binReader.skipPastObjectRecord(SCIDAC_FILE_XML);
@@ -160,42 +162,49 @@ protected:
             eval[k] = vecRecord.eval;
             if(true)
             {
-                // convert the eigen values to single precision
-                //RealF tmp = (RealF) eval[k];
-                //eval[k] = (RealD) tmp;
-                // convert the eigen vectors to single precision
-                LOG(Message) << "beforeCast" << std::endl;
-                precisionChange(tmp, evec[k]);
-                LOG(Message) << "duringCast" << std::endl;
-                precisionChange(evec_result[k], tmp); // this is the issue!!!
+	      T evec_result(grid);
 
-                vSpinColourVector::scalar_object  site_evec;
-                
-                
-                
-                LOG(Message) << "double: " << norm2(evec[k]) << std::endl;
-                LOG(Message) << "singletmp: " << norm2(tmp) << std::endl;
-                LOG(Message) << "single: " << norm2(evec_result[k]) << std::endl;
-                
+	      typedef typename T::vector_object vobj;
+	      typedef typename vobj::SinglePrecision vobj_f;
+	      typedef Lattice<vobj_f> T_F;
+	      T_F tmp(FrbGrid_f); tmp=zero;
 
-                std::vector<int> lcoor = {0, 0, 0, 0};
-                //peekSite(site_evec, dummy, lcoor);
-                LOG(Message) << "evec site: " << evec[k]._odata[0] << std::endl;
-                LOG(Message) << "evectmp site: " << tmp._odata[0] << std::endl;
-                LOG(Message) << "evec_result site: " << evec_result[k]._odata[0] << std::endl;
-                evec[k] = evec_result[k] - evec[k];
-                LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
-                LOG(Message) << "evec diff site: " << evec[k]._odata[0] << std::endl;
-                evec[k] = evec_result[k];
+	      GridBase * grid1 = tmp._grid;
+
+	      std::vector<int> tmpDim = grid1->FullDimensions();
+
+              LOG(Message) << "new lattice: " << tmpDim << std::endl;
+
+	      // convert the eigen values to and from single precision
+	      LOG(Message) << "beforeCast" << std::endl;
+	      precisionChange(tmp, evec[k]);
+	      LOG(Message) << "duringCast" << std::endl;
+	      precisionChange(evec_result, tmp); // this is the issue!!!
+
+	      LOG(Message) << "double     : " << norm2(evec[k]) << std::endl;
+	      LOG(Message) << "tmp        : " << norm2(tmp) << std::endl;
+	      LOG(Message) << "reconverted: " << norm2(evec_result) << std::endl;
+                
+	      LOG(Message) << "evec site: " << evec[k]._odata[0] << std::endl;
+	      LOG(Message) << "evectmp site: " << tmp._odata[0] << std::endl;
+	      LOG(Message) << "evec_result site: " << evec_result._odata[0] << std::endl;
+
+	      evec[k] = evec_result - evec[k];
+	      LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
+	      LOG(Message) << "evec diff site: " << evec[k]._odata[0] << std::endl;
+
+	      evec[k] = evec_result;
 
             }
         }
         binReader.close();
+	delete UGrid_f;
+	delete FrbGrid_f;
     }
 
     template <typename T>
     void basicReadSingle(T &evec, double &eval, const std::string filename, 
-                         const unsigned int index, T &evec_result)
+                         const unsigned int index)
     {
         ScidacReader binReader;
         VecRecord    vecRecord;
@@ -215,6 +224,7 @@ protected:
         LOG(Message) << "After eval extracted" << std::endl;
         if(true)
         {
+#if 0
             //site print to log set up
             std::vector<int> lcoor = {0, 0, 0, 0};
             //vSpinColourVectorD::scalar_object  site_evec; //LatticeSpinColourVectorF
@@ -247,7 +257,7 @@ protected:
             //LOG(Message) << "evec site: " << site_evec << std::endl;
             //LOG(Message) << "result site: " << site_result << std::endl;
             evec = evec_result;
-
+#endif
         }
         binReader.close();
     }
@@ -329,12 +339,12 @@ public:
         {
             for(int k = 0; k < this->evec.size(); ++k)
             {
-                this->basicReadSingle(this->evec[k], this->eval[k], this->evecFilename(fileStem + "_fine", k, traj), k, this->evec[k]);
+                this->basicReadSingle(this->evec[k], this->eval[k], this->evecFilename(fileStem + "_fine", k, traj), k);
             }
         }
         else
         {
-            this->basicRead(this->evec, this->eval, this->evecFilename(fileStem + "_fine", -1, traj), this->evec.size(), this->evec);
+            this->basicRead(this->evec, this->eval, this->evecFilename(fileStem + "_fine", -1, traj), this->evec.size());
         }
     }
 
@@ -344,12 +354,12 @@ public:
         {
             for(int k = 0; k < evecCoarse.size(); ++k)
             {
-                this->basicReadSingle(evecCoarse[k], evalCoarse[k], this->evecFilename(fileStem + "_coarse", k, traj), k, evecCoarse[k]);
+                this->basicReadSingle(evecCoarse[k], evalCoarse[k], this->evecFilename(fileStem + "_coarse", k, traj), k);
             }
         }
         else
         {
-            this->basicRead(evecCoarse, evalCoarse, this->evecFilename(fileStem + "_coarse", -1, traj), evecCoarse.size(), evecCoarse);
+            this->basicRead(evecCoarse, evalCoarse, this->evecFilename(fileStem + "_coarse", -1, traj), evecCoarse.size());
         }
     }
 

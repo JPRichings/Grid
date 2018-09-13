@@ -61,6 +61,7 @@ class iScalar {
 
   // get double precision version
   typedef iScalar<typename GridTypeMapper<vtype>::DoublePrecision> DoublePrecision;
+  typedef iScalar<typename GridTypeMapper<vtype>::SinglePrecision> SinglePrecision;
   
   enum { TensorLevel = GridTypeMapper<vtype>::TensorLevel + 1 };
 
@@ -209,6 +210,7 @@ class iVector {
 
   // get double precision version
   typedef iVector<typename GridTypeMapper<vtype>::DoublePrecision, N> DoublePrecision;
+  typedef iVector<typename GridTypeMapper<vtype>::SinglePrecision, N> SinglePrecision;
   
   template <class T, typename std::enable_if<!isGridTensor<T>::value, T>::type
                          * = nullptr>
@@ -323,6 +325,7 @@ class iMatrix {
 
   // get double precision version
   typedef iMatrix<typename GridTypeMapper<vtype>::DoublePrecision, N> DoublePrecision;
+  typedef iMatrix<typename GridTypeMapper<vtype>::SinglePrecision, N> SinglePrecision;
   
   // Tensor removal
   typedef iScalar<tensor_reduced_v> tensor_reduced;
