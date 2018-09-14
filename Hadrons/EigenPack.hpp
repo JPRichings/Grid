@@ -276,6 +276,8 @@ protected:
 
             }
 	binReader.close();
+        delete UGrid_f;
+        delete FrbGrid_f;
     }
 
     template <typename T>
