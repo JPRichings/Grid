@@ -269,10 +269,10 @@ protected:
               LOG(Message) << "evec_result site: " << evec_result._odata[0] << std::endl;
 
               evec = evec_result - evec;
-              LOG(Message) << "diff: " << norm2(evec[k]) << std::endl;
+              LOG(Message) << "diff: " << norm2(evec) << std::endl;
               LOG(Message) << "evec diff site: " << evec._odata[0] << std::endl;
 
-              evec[k] = evec_result;
+              evec = evec_result;
 
             }
 	binReader.close();
