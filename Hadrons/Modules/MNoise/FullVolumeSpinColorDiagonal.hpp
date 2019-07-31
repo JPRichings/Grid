@@ -46,7 +46,8 @@ class FullVolumeSpinColorDiagonalPar: Serializable
 {
 public:
     GRID_SERIALIZABLE_CLASS_MEMBERS(FullVolumeSpinColorDiagonalPar,
-                                    unsigned int, nsrc);
+                                    unsigned int, nsrc,
+                                    unsigned int, nsparse);
 };
 
 template <typename FImpl>
@@ -101,9 +102,14 @@ std::vector<std::string> TFullVolumeSpinColorDiagonal<FImpl>::getOutput(void)
 template <typename FImpl>
 void TFullVolumeSpinColorDiagonal<FImpl>::setup(void)
 {
+    //if(par().nsparse.empty())
+    //{
+    //    par().nsparse = 0;
+    //}
+
     envCreateDerived(DilutedNoise<FImpl>, 
                      FullVolumeSpinColorDiagonalNoise<FImpl>,
-                     getName(), 1, envGetGrid(FermionField), par().nsrc);
+                     getName(), 1, envGetGrid(FermionField), par().nsrc, par().nsparse);
 }
 
 // execution ///////////////////////////////////////////////////////////////////
@@ -112,7 +118,7 @@ void TFullVolumeSpinColorDiagonal<FImpl>::execute(void)
 {
     auto &noise = envGet(DilutedNoise<FImpl>, getName());
     LOG(Message) << "Generating full volume, spin-color diagonal noise" << std::endl;
-    noise.generateNoise(rng4d());
+    noise.generateNoise(rng4d()); // add sparsen parameter bool
 }
 
 END_MODULE_NAMESPACE

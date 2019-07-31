@@ -46,6 +46,7 @@ public:
     // constructor/destructor
     DilutedNoise(GridCartesian *g);
     DilutedNoise(GridCartesian *g, const unsigned int nNoise);
+    DilutedNoise(GridCartesian *g, const unsigned int nNoise, const unsigned int nSparse);
     virtual ~DilutedNoise(void) = default;
     // access
     std::vector<FermionField> &       getNoise(void);
@@ -61,6 +62,7 @@ private:
     std::vector<FermionField> noise_;
     GridCartesian             *grid_;
     unsigned int              nNoise_;
+    unsigned int              nSparse_;
 };
 
 template <typename FImpl>
@@ -85,12 +87,13 @@ public:
     typedef typename FImpl::FermionField FermionField;
 public:
     // constructor/destructor
-    FullVolumeSpinColorDiagonalNoise(GridCartesian *g, unsigned int n_src);
+    FullVolumeSpinColorDiagonalNoise(GridCartesian *g, unsigned int n_src, unsigned int n_sparse);
     virtual ~FullVolumeSpinColorDiagonalNoise(void) = default;
     // generate noise
     virtual void generateNoise(GridParallelRNG &rng);
 private:
     unsigned int nSrc_;
+    unsigned int nSparse_;
 };
 
 
@@ -209,8 +212,8 @@ void TimeDilutedSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rn
  ******************************************************************************/
 template <typename FImpl>
 FullVolumeSpinColorDiagonalNoise<FImpl>::
-FullVolumeSpinColorDiagonalNoise(GridCartesian *g, unsigned int nSrc)
-: DilutedNoise<FImpl>(g, nSrc*Ns*FImpl::Dimension), nSrc_(nSrc)
+FullVolumeSpinColorDiagonalNoise(GridCartesian *g, unsigned int nSrc, unsigned int nSparse)
+: DilutedNoise<FImpl>(g, nSrc*Ns*FImpl::Dimension), nSrc_(nSrc), nSparse_(nSparse)
 {}
 
 template <typename FImpl>
@@ -222,15 +225,50 @@ void FullVolumeSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rng
     auto                       g      = this->getGrid();
     auto                       nd     = g->GlobalDimensions().size();
     auto                       nc     = FImpl::Dimension;
+    LatticeInteger             coor(g), coorTot(g); coorTot = 0.;
     Complex                    shift(1., 1.);
-    LatticeComplex             eta(g);
+    LatticeComplex             eta(g), etaSparse(g);
     SpinField                  etas(g);
     unsigned int               i = 0;
+    unsigned int               j = 0;
+    unsigned int               nSrc_ec;
+    
+    if(nSrc_%nSparse_==0)
+    {
+         nSrc_ec = nSrc_/nSparse_;
+    }
+    else
+    {
+         nSrc_ec = (nSrc_ - nSrc_%nSparse_)%nSparse_;
+    }
+    LOG(Message) << "nSrc_ec " << nSrc_ec << std::endl;
 
-    bernoulli(rng, eta);
-    eta = (2.*eta - shift)*(1./::sqrt(2.));
     for (unsigned int n = 0; n < nSrc_; ++n)
     {
+        bernoulli(rng, eta);
+        eta = (2.*eta - shift)*(1./::sqrt(2.));
+
+        if(nSparse_ != 1)
+        { 
+        assert(g->GlobalDimensions()[1]%nSparse_ == 0);
+        // # 0 # 0
+        // 0 # 0 #
+        // # 0 # 0
+        // 0 # 0 #
+
+        coorTot = 0;
+
+            for(unsigned int d = 0; d < nd-1; ++d) 
+            {
+                LatticeCoordinate(coor, d);
+                coorTot = coorTot + coor;
+            }
+            LOG(Message) << "j: " << j << std::endl;
+            coorTot = coorTot + j;
+            eta = where(mod(coorTot,nSparse_), 0.*eta, eta);
+            
+        }
+        
         for (unsigned int s = 0; s < Ns; ++s)
         {
             etas = zero;
@@ -239,9 +277,17 @@ void FullVolumeSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rng
             {
                 noise[i] = zero;
                 pokeColour(noise[i], etas, c);
+                
                 i++;
+                
+                /**/ 
+            
             }
         }
+        
+        ((n+1)%nSrc_ec == 0) ? j++: 0;
+
+        LOG(Message) << "n: " << n << " etas: " << etas << std::endl;
     }
 }
 
