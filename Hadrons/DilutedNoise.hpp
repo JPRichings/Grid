@@ -53,6 +53,7 @@ public:
     const std::vector<FermionField> & getNoise(void) const;
     const FermionField &              operator[](const unsigned int i) const;
     FermionField &                    operator[](const unsigned int i);
+    void                              normalise(Real x);
     void                              resize(const unsigned int nNoise);
     unsigned int                      size(void) const;
     GridCartesian                     *getGrid(void) const;
@@ -139,6 +140,15 @@ typename DilutedNoise<FImpl>::FermionField &
 DilutedNoise<FImpl>::operator[](const unsigned int i)
 {
     return noise_[i];
+}
+
+template <typename FImpl>
+void DilutedNoise<FImpl>::normalise(Real x)
+{
+    for(int i=0;i<noise_.size();i++)
+    {
+    noise_[i] = x*noise_[i];
+    }
 }
 
 template <typename FImpl>
@@ -241,6 +251,7 @@ void FullVolumeSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rng
     {
          nSrc_ec = (nSrc_ - nSrc_%nSparse_)%nSparse_;
     }
+    
     LOG(Message) << "nSrc_ec " << nSrc_ec << std::endl;
 
     for (unsigned int n = 0; n < nSrc_; ++n)
@@ -289,6 +300,8 @@ void FullVolumeSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rng
 
         LOG(Message) << "n: " << n << " etas: " << etas << std::endl;
     }
+    Real norm = sqrt(1./nSrc_ec);
+    this->normalise(norm);
 }
 
 END_HADRONS_NAMESPACE
