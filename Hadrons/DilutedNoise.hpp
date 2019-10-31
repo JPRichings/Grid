@@ -243,13 +243,13 @@ void FullVolumeSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rng
     unsigned int               j = 0;
     unsigned int               nSrc_ec;
     
-    if(nSrc_%nSparse_==0)
+    if(nSrc_%nSparse_== 0)
     {
          nSrc_ec = nSrc_/nSparse_;
     }
     else
     {
-         nSrc_ec = (nSrc_ - nSrc_%nSparse_)%nSparse_;
+         nSrc_ec = (nSrc_ - nSrc_%nSparse_)/nSparse_;
     }
     
     LOG(Message) << "nSrc_ec " << nSrc_ec << std::endl;
@@ -296,7 +296,7 @@ void FullVolumeSpinColorDiagonalNoise<FImpl>::generateNoise(GridParallelRNG &rng
             }
         }
         
-        ((n+1)%nSrc_ec == 0) ? j++: 0;
+        ((n+1)%nSrc_ec == 0) ? j++ : 0;
 
         LOG(Message) << "n: " << n << " etas: " << etas << std::endl;
     }
