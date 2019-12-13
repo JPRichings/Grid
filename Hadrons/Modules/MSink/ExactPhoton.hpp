@@ -155,22 +155,22 @@ void TExactPhoton<FImpl>::execute(void)
 
     out = peekLorentz(a,0);
 
-    std::cout << "out: " << std::endl;//<< out 
+    //std::cout << "out: " << std::endl;//<< out 
 
-    std::cout << "a: " << std::endl;//a << 
+    //std::cout << "a: " << std::endl;//a << 
 
     // get fft
     FFT  fft(g);
-    std::cout << "check A" << std::endl;
-    fft.FFT_all_dim(out, out, FFT::backward);
-    std::cout << "check B" << std::endl;
+    //std::cout << "check A" << std::endl;
+    fft.FFT_all_dim(out, out, FFT::forward);
+    //std::cout << "check B" << std::endl;
 
     auto sink = [&ph, &out](const PropagatorField &field)
     {
         SlicedPropagator res;
-        std::cout << "check 1" << std::endl;
+        //std::cout << "check 1" << std::endl;
         PropagatorField  tmp = ph*out*field;
-        std::cout << "check 2" << std::endl;
+        //std::cout << "check 2" << std::endl;
         // do spacial y sum
         sliceSum(tmp, res, Tp);
         
