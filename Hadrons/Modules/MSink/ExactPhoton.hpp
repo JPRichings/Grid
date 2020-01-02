@@ -87,7 +87,7 @@ void TExactPhoton<FImpl>::setup(void)
     envCacheLat(LatticeComplex, momphName_);
     envCacheLat(LatticeComplex, "out");
     envCreate(SinkFn, getName(), 1, nullptr);
-    envCreateLat(EmField, "a");
+    envTmpLat(EmField, "a");
 }
 
 // execution ///////////////////////////////////////////////////////////////////
