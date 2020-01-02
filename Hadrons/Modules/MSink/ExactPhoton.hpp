@@ -120,7 +120,7 @@ void TExactPhoton<FImpl>::execute(void)
 
     // set up enviroment
     PhotonR photon(envGetGrid(EmField), par().gauge, par().zmScheme);
-    auto    &a = envGet(EmField, "a");
+    auto    &a = envGetTmp(EmField, "a");
     photon.UnitField(a);
     //auto    &out = envGet(EmField, "out");
 
